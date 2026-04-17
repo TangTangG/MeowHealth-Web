@@ -1,16 +1,19 @@
-import { Routes, Route } from 'react-router-dom'
-import Dashboard from './pages/Dashboard'
-import Cats from './pages/Cats'
+import { Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import Cats from './pages/Cats';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/cats" element={<Cats />} />
-      </Routes>
-    </div>
-  )
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="cats" element={<Cats />} />
+        <Route path="reports" element={<div className="p-4">Reports (Coming Soon)</div>} />
+        <Route path="settings" element={<div className="p-4">Settings (Coming Soon)</div>} />
+      </Route>
+    </Routes>
+  );
 }
 
-export default App
+export default App;
