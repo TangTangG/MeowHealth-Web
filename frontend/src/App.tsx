@@ -1,3 +1,4 @@
+import Reports from './pages/Reports';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -9,7 +10,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="cats" element={<Cats />} />
-        <Route path="reports" element={<div className="p-4">Reports (Coming Soon)</div>} />
+        <Route path="reports" element={<Reports />} />
         <Route path="settings" element={<div className="p-4">Settings (Coming Soon)</div>} />
       </Route>
     </Routes>

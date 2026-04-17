@@ -93,16 +93,21 @@ class ReportAttachment(Base):
     __tablename__ = "report_attachments"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    record_id: Mapped[str] = mapped_column(ForeignKey("health_records.id", ondelete="CASCADE"))
+    cat_id: Mapped[str] = mapped_column(ForeignKey("cats.id", ondelete="CASCADE"))
+    record_id: Mapped[Optional[str]] = mapped_column(ForeignKey("health_records.id", ondelete="CASCADE"), nullable=True)
     file_path: Mapped[str] = mapped_column(String(500))
     file_name: Mapped[str] = mapped_column(String(255))
+    file_type: Mapped[str] = mapped_column(String(50))
     mime_type: Mapped[str] = mapped_column(String(100))
     file_size: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    record: Mapped["HealthRecord"] = relationship(back_populates="attachments")
+    cat: Mapped["Cat"] = relationship("Cat")
+    record: Mapped[Optional["HealthRecord"]] = relationship(back_populates="attachments")
 
     __table_args__ = (
+        Index("idx_report_attachments_cat_id", "cat_id"),
         Index("idx_report_attachments_record_id", "record_id"),
     )
 

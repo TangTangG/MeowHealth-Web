@@ -107,6 +107,26 @@ class ReminderResponse(ReminderBase):
     class Config:
         from_attributes = True
 
+# ReportAttachment schemas
+class ReportAttachmentBase(BaseModel):
+    file_name: str
+    file_type: str
+    mime_type: str = ""
+    file_size: Optional[int] = None
+
+class ReportAttachmentCreate(ReportAttachmentBase):
+    cat_id: str
+
+class ReportAttachmentResponse(ReportAttachmentBase):
+    id: str
+    cat_id: str
+    file_path: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
 # Dashboard summary schema
 class DashboardSummary(BaseModel):
     cat_id: str

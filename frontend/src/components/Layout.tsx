@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import ChatAssistant from './ChatAssistant';
 
 export default function Layout() {
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
@@ -13,6 +14,7 @@ export default function Layout() {
           <Outlet context={{ selectedCatId }} />
         </div>
       </main>
+      <ChatAssistant />
     </div>
   );
 }

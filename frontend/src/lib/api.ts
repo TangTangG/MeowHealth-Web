@@ -54,3 +54,30 @@ export const deleteReminder = (reminderId: string) =>
 
 export const getHealthRecords = (catId: string, type?: string, limit: number = 50) =>
   api.get<HealthRecord[]>(`/health-records/cat/${catId}`, { params: { type, limit } }).then(r => r.data);
+
+// ========== 化验单 API ==========
+
+export const uploadReport = (catId: string, file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return api.post('/reports/upload/' + catId, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }).then(r => r.data);
+};
+
+export const getReports = (catId: string) =>
+  api.get(`/reports/cat/${catId}`).then(r => r.data);
+
+export const deleteReport = (reportId: string) =>
+  api.delete(`/reports/${reportId}`).then(r => r.data);
+
+export const analyzeReport = (reportId: string) =>
+  api.post(`/reports/${reportId}/analyze`).then(r => r.data);
+
+// ========== 设置 API ==========
+
+export const setApiKey = (apiKey: string) =>
+  api.post('/reports/settings/api-key', { api_key: apiKey }).then(r => r.data);
+
+export const getApiKeyStatus = () =>
+  api.get('/reports/settings/api-key/status').then(r => r.data);
