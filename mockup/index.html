@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeowHealth Web - 概念设计图</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#f4a261',
+                        secondary: '#e76f51',
+                        bg: '#f8f9fa',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 h-screen font-sans text-gray-800 flex overflow-hidden">
+
+    <!-- 侧边栏 -->
+    <aside class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-primary flex items-center gap-2">
+                <i class="fas fa-cat"></i> MeowHealth
+            </h1>
+        </div>
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium">
+                <i class="fas fa-file-medical"></i> 报告分析
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition">
+                <i class="fas fa-paw"></i> 猫咪档案
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl transition">
+                <i class="fas fa-chart-line"></i> 健康趋势
+            </a>
+        </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- 顶部导航 -->
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center z-10">
+            <div>
+                <h2 class="text-xl font-semibold">2026-04-09 血液生化全项</h2>
+                <p class="text-sm text-gray-500">猫咪: 汤圆 | 来源: 上海宠爱动物医院</p>
+            </div>
+            <button class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                <i class="far fa-file-pdf mr-1"></i> 查看原件
+            </button>
+        </header>
+
+        <!-- 内容滚动区 -->
+        <div class="flex-1 overflow-y-auto p-8 relative">
+            
+            <!-- AI 摘要卡片 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8 flex gap-4 items-start">
+                <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0 text-xl">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-2">AI 综合评估</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        汤圆本次体检总体状况平稳。值得注意的是 <span class="font-semibold text-red-500">BUN（尿素氮）</span> 和 <span class="font-semibold text-orange-500">CREA（肌酐）</span> 指标略高于正常范围，提示存在早期肾脏压力。肝功能指标正常。建议增加日常饮水量，并考虑在一个月后复查肾功。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 数据结构卡片 (异常展开) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-red-100 mb-6 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 bg-red-50/30 flex justify-between items-center cursor-pointer">
+                    <h3 class="font-semibold text-lg flex items-center gap-2">
+                        <i class="fas fa-kidneys text-red-400"></i> 肾脏功能 (异常)
+                    </h3>
+                    <i class="fas fa-chevron-up text-gray-400"></i>
+                </div>
+                <div class="p-6 space-y-6">
+                    
+                    <!-- 异常指标项 (带趋势图) -->
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <div class="font-medium">CREA 肌酐</div>
+                                <div class="text-xs text-gray-500">参考值: 71 - 212 μmol/L</div>
+                            </div>
+                            <div class="text-right flex items-center gap-4">
+                                <div class="text-red-500 font-bold text-xl flex items-center gap-1">
+                                    <i class="fas fa-arrow-up text-sm"></i> 245 
+                                </div>
+                                <button class="text-primary hover:text-secondary text-sm">隐藏趋势</button>
+                            </div>
+                        </div>
+                        <!-- 趋势图占位 -->
+                        <div class="h-32 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden relative">
+                           <svg class="w-full h-full" viewBox="0 0 400 100" preserveAspectRatio="none">
+                               <path d="M0,80 L100,75 L200,90 L300,50 L400,20" fill="none" stroke="#f4a261" stroke-width="3"/>
+                               <circle cx="0" cy="80" r="4" fill="#f4a261"/>
+                               <circle cx="100" cy="75" r="4" fill="#f4a261"/>
+                               <circle cx="200" cy="90" r="4" fill="#f4a261"/>
+                               <circle cx="300" cy="50" r="4" fill="#f4a261"/>
+                               <circle cx="400" cy="20" r="4" fill="#e76f51"/>
+                           </svg>
+                           <div class="absolute inset-0 flex items-end justify-between px-2 pb-2 text-[10px] text-gray-400">
+                               <span>10月</span><span>11月</span><span>12月</span><span>1月</span><span>本次</span>
+                           </div>
+                        </div>
+                    </div>
+
+                    <!-- 另一异常指标项 -->
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 border-dashed">
+                        <div>
+                            <div class="font-medium">BUN 尿素氮</div>
+                            <div class="text-xs text-gray-500">参考值: 5.7 - 12.9 mmol/L</div>
+                        </div>
+                        <div class="text-right flex items-center gap-4">
+                            <div class="text-orange-500 font-bold text-lg flex items-center gap-1">
+                                <i class="fas fa-arrow-up text-sm"></i> 14.2 
+                            </div>
+                            <button class="text-gray-400 hover:text-primary text-sm">查看趋势</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据结构卡片 (正常折叠) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+                <div class="px-6 py-4 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition">
+                    <h3 class="font-semibold text-lg flex items-center gap-2 text-gray-700">
+                        <i class="fas fa-liver text-green-500"></i> 肝脏功能 (正常)
+                    </h3>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">所有指标正常</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 悬浮对话助手 (方案二融合) -->
+        <div class="absolute bottom-8 right-8 w-80 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col z-50">
+            <!-- Header -->
+            <div class="bg-primary px-4 py-3 text-white flex justify-between items-center">
+                <div class="font-medium flex items-center gap-2">
+                    <i class="fas fa-sparkles"></i> AI 助手
+                </div>
+                <div class="flex gap-2">
+                    <i class="fas fa-window-minimize cursor-pointer opacity-80 hover:opacity-100"></i>
+                </div>
+            </div>
+            
+            <!-- Chat Area -->
+            <div class="h-64 bg-gray-50 p-4 overflow-y-auto flex flex-col gap-3">
+                <div class="bg-white border border-gray-100 rounded-lg rounded-tl-none p-3 text-sm text-gray-700 shadow-sm max-w-[85%] self-start">
+                    你好！我已经阅读了汤圆的最新报告。需要我为你解答关于「肌酐偏高」的问题吗？
+                </div>
+                
+                <div class="bg-primary/10 border border-primary/20 rounded-lg rounded-tr-none p-3 text-sm text-gray-800 max-w-[85%] self-end">
+                    肌酐 245 严重吗？对比上次情况如何？
+                </div>
+                
+                <div class="bg-white border border-gray-100 rounded-lg rounded-tl-none p-3 text-sm text-gray-700 shadow-sm max-w-[85%] self-start">
+                    汤圆上次（1月）的肌酐是 210，这次 245 有明显的上升趋势。结合 BUN 也偏高，建议不要大意。当前属于早期指标异常，及时干预（如处方粮+增加水分）通常能有效控制。建议拿着报告咨询主治医生是否需要开始服用肾脏补充剂。
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="p-3 border-t border-gray-100 bg-white">
+                <div class="relative">
+                    <input type="text" placeholder="提问..." class="w-full pl-3 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                    <button class="absolute right-2 top-1.5 text-primary hover:text-secondary p-1">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+
+</body>
+</html>
