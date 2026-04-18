@@ -1,25 +1,44 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import UploadZone from '@/components/UploadZone';
-import { getReports, uploadReport, deleteReport, analyzeReport, getApiKeyStatus, setApiKey } from '@/lib/api';
-import { FileText, Loader2, Sparkles, Trash2, Key } from 'lucide-react';
+import { UploadZone } from '@/components/UploadZone';
+import { ReportCard } from '@/components/ReportCard';
+import { ChatAssistant } from '@/components/ChatAssistant';
+import { api } from '@/lib/api';
+import { FileText, Loader2, Sparkles, Trash2, Key, ChevronLeft } from 'lucide-react';
 
 interface OutletContext {
   selectedCatId: string | null;
 }
 
+interface Indicator {
+  id: string;
+  name: string;
+  display_name: string;
+  value: number | null;
+  unit: string;
+  reference_min: number | null;
+  reference_max: number | null;
+  is_abnormal: boolean;
+  explanation: string | null;
+}
+
 interface Report {
   id: string;
-  file_name: string;
-  file_type: string;
+  cat_id: string;
+  title: string;
+  date: string;
+  ai_summary: string;
+  actionable_advice: string[];
+  indicators: Indicator[];
+  file_name?: string;
   created_at: string;
 }
 
 export default function Reports() {
   const { selectedCatId } = useOutletContext<OutletContext>();
   const [reports, setReports] = useState<Report[]>([]);
-  const [uploading, setUploading] = useState(false);
-  const [analyzing, setAnalyzing] = useState<string | null>(null);
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [loading, setLoading] = useState(false);
   const [apiKeyConfigured, setApiKeyConfigured] = useState(false);
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
   const [apiKey, setApiKey] = useState('');
@@ -27,19 +46,22 @@ export default function Reports() {
   const loadReports = async () => {
     if (!selectedCatId) return;
     try {
-      const data = await getReports(selectedCatId);
+      setLoading(true);
+      const { data } = await api.get('/reports/', { params: { cat_id: selectedCatId } });
       setReports(data);
     } catch (error) {
       console.error('Failed to load reports:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const checkApiKey = async () => {
     try {
-      const status = await getApiKeyStatus();
-      setApiKeyConfigured(status.configured);
+      const { data } = await api.get('/settings/gemini-api-key');
+      setApiKeyConfigured(!!data.api_key);
     } catch (error) {
-      console.error('Failed to check API key:', error);
+      setApiKeyConfigured(false);
     }
   };
 
@@ -48,57 +70,32 @@ export default function Reports() {
     checkApiKey();
   }, [selectedCatId]);
 
-  const handleUpload = async (files: File[]) => {
-    if (!selectedCatId) return;
-    setUploading(true);
-    try {
-      for (const file of files) {
-        await uploadReport(selectedCatId, file);
-      }
-      loadReports();
-    } catch (error) {
-      console.error('Failed to upload:', error);
-      alert('上传失败');
-    } finally {
-      setUploading(false);
-    }
+  const handleUploadComplete = (reportId: string) => {
+    // 上传完成后刷新列表并显示新报告
+    loadReports();
+    // 可选：自动打开新报告
+    // const newReport = reports.find(r => r.id === reportId);
+    // if (newReport) setSelectedReport(newReport);
   };
 
   const handleDelete = async (reportId: string) => {
     if (!confirm('确定要删除这个化验单吗？')) return;
     try {
-      await deleteReport(reportId);
+      await api.delete(`/reports/${reportId}`);
+      if (selectedReport?.id === reportId) {
+        setSelectedReport(null);
+      }
       loadReports();
     } catch (error) {
       console.error('Failed to delete:', error);
-    }
-  };
-
-  const handleAnalyze = async (reportId: string) => {
-    if (!apiKeyConfigured) {
-      setShowApiKeyInput(true);
-      return;
-    }
-    setAnalyzing(reportId);
-    try {
-      await analyzeReport(reportId);
-      alert('分析完成！结果已保存到健康记录。');
-    } catch (error: any) {
-      console.error('Failed to analyze:', error);
-      if (error.response?.data?.detail?.includes('API Key')) {
-        setShowApiKeyInput(true);
-      } else {
-        alert('分析失败: ' + (error.response?.data?.detail || '未知错误'));
-      }
-    } finally {
-      setAnalyzing(null);
+      alert('删除失败');
     }
   };
 
   const handleSetApiKey = async () => {
     if (!apiKey.trim()) return;
     try {
-      await setApiKey(apiKey.trim());
+      await api.post('/settings/gemini-api-key', { api_key: apiKey.trim() });
       setApiKeyConfigured(true);
       setShowApiKeyInput(false);
       setApiKey('');
@@ -112,6 +109,45 @@ export default function Reports() {
     return (
       <div className="flex items-center justify-center h-96">
         <p className="text-gray-500">请先在侧边栏选择一只猫咪</p>
+      </div>
+    );
+  }
+
+  // 显示单个报告详情
+  if (selectedReport) {
+    return (
+      <div>
+        <div className="flex items-center gap-4 mb-6">
+          <button
+            onClick={() => setSelectedReport(null)}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+          >
+            <ChevronLeft size={20} />
+            返回列表
+          </button>
+          <h2 className="text-2xl font-bold text-gray-800">{selectedReport.title}</h2>
+          <button
+            onClick={() => handleDelete(selectedReport.id)}
+            className="ml-auto p-2 text-red-600 hover:bg-red-50 rounded"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <ReportCard
+              title={selectedReport.title}
+              date={selectedReport.date}
+              summary={selectedReport.ai_summary}
+              indicators={selectedReport.indicators}
+              recommendations={selectedReport.actionable_advice}
+            />
+          </div>
+          <div className="lg:col-span-1">
+            <ChatAssistant reportId={selectedReport.id} />
+          </div>
+        </div>
       </div>
     );
   }
@@ -173,46 +209,49 @@ export default function Reports() {
 
       {/* Upload Zone */}
       <div className="mb-8">
-        <UploadZone onUpload={handleUpload} uploading={uploading} />
+        <UploadZone catId={selectedCatId} onUploadComplete={handleUploadComplete} />
       </div>
 
       {/* Reports List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {reports.map(report => (
-          <div key={report.id} className="bg-white rounded-lg p-4 shadow-sm border">
-            <div className="flex items-start gap-3">
-              <FileText className="text-gray-400 flex-shrink-0" size={24} />
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{report.file_name}</p>
-                <p className="text-sm text-gray-500">
-                  {new Date(report.created_at).toLocaleDateString('zh-CN')}
-                </p>
-              </div>
-              <button
-                onClick={() => handleDelete(report.id)}
-                className="p-1.5 text-red-600 hover:bg-red-50 rounded flex-shrink-0"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-            
-            <button
-              onClick={() => handleAnalyze(report.id)}
-              disabled={analyzing === report.id}
-              className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="animate-spin text-blue-600" size={32} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {reports.map(report => (
+            <div 
+              key={report.id} 
+              onClick={() => setSelectedReport(report)}
+              className="bg-white rounded-lg p-4 shadow-sm border cursor-pointer hover:shadow-md transition-shadow"
             >
-              {analyzing === report.id ? (
-                <Loader2 className="animate-spin" size={16} />
-              ) : (
-                <Sparkles size={16} />
+              <div className="flex items-start gap-3">
+                <FileText className="text-gray-400 flex-shrink-0" size={24} />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{report.title}</p>
+                  <p className="text-sm text-gray-500">
+                    {new Date(report.date).toLocaleDateString('zh-CN')}
+                  </p>
+                  {report.ai_summary && (
+                    <p className="text-sm text-blue-600 mt-2 line-clamp-2">
+                      {report.ai_summary}
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              {!report.ai_summary && (
+                <div className="mt-4 flex items-center gap-2 text-yellow-600 text-sm">
+                  <Sparkles size={14} />
+                  等待 AI 分析
+                </div>
               )}
-              {analyzing === report.id ? '分析中...' : 'AI 解读'}
-            </button>
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-      {reports.length === 0 && (
+      {!loading && reports.length === 0 && (
         <div className="text-center py-12 text-gray-400">
           还没有上传化验单，点击上方区域上传
         </div>

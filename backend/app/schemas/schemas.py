@@ -109,29 +109,57 @@ class ReminderResponse(ReminderBase):
 
 # ReportAttachment schemas
 class ReportAttachmentBase(BaseModel):
+    file_path: str
     file_name: str
-    file_type: str
-    mime_type: str = ""
+    mime_type: str
     file_size: Optional[int] = None
-
-class ReportAttachmentCreate(ReportAttachmentBase):
-    cat_id: str
 
 class ReportAttachmentResponse(ReportAttachmentBase):
     id: str
-    cat_id: str
-    file_path: str
     created_at: datetime
-    updated_at: datetime
-
+    
     class Config:
         from_attributes = True
 
-# Dashboard summary schema
-class DashboardSummary(BaseModel):
+# Report schemas
+class ReportBase(BaseModel):
     cat_id: str
-    cat_name: str
-    latest_weight: Optional[float]
-    weight_trend: List[WeightLogResponse]
-    upcoming_reminders: List[ReminderResponse]
-    recent_records: List[HealthRecordResponse]
+    title: str
+    note: Optional[str] = None
+
+class ReportCreate(ReportBase):
+    pass
+
+class ReportResponse(BaseModel):
+    id: str
+    cat_id: str
+    date: datetime
+    type: str
+    title: str
+    note: Optional[str] = None
+    ai_summary: Optional[str] = None
+    actionable_advice: Optional[List[str]] = None
+    indicators: List[HealthIndicatorResponse] = []
+    attachments: List[ReportAttachmentResponse] = []
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+# Chat schemas
+class ChatMessageCreate(BaseModel):
+    content: str
+
+
+class ChatMessageResponse(BaseModel):
+    id: str
+    record_id: Optional[str] = None
+    role: str
+    content: str
+    model_name: Optional[str] = None
+    token_usage: Optional[int] = None
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
