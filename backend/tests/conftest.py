@@ -50,7 +50,7 @@ def client(db):
 def sample_cat(client):
     """创建一个示例猫咪"""
     response = client.post(
-        "/api/cats/",
+        "/api/v1/cats/",
         json={
             "name": "测试猫",
             "breed": "英短",
