@@ -55,9 +55,11 @@ async def create_report_from_upload(
     
     attachment = ReportAttachment(
         id=str(uuid.uuid4()),
+        cat_id=cat_id,
         record_id=record.id,
         file_path=file_path,
         file_name=file_name,
+        file_type="pdf",
         mime_type=mime_type,
         file_size=file_size
     )
@@ -141,3 +143,21 @@ def get_chat_history(report_id: str, db: Session = Depends(get_db)):
         AIChatMessage.record_id == report_id
     ).order_by(AIChatMessage.created_at).all()
     return messages
+
+
+@router.delete("/{report_id}")
+def delete_report(report_id: str, db: Session = Depends(get_db)):
+    """删除报告"""
+    record = db.query(HealthRecord).filter(HealthRecord.id == report_id).first()
+    if not record:
+        raise HTTPException(404, "报告不存在")
+    
+    # 级联删除关联的 indicators, attachments, chat_messages
+    db.query(HealthIndicator).filter(HealthIndicator.record_id == report_id).delete()
+    db.query(ReportAttachment).filter(ReportAttachment.record_id == report_id).delete()
+    db.query(AIChatMessage).filter(AIChatMessage.record_id == report_id).delete()
+    
+    db.delete(record)
+    db.commit()
+    
+    return {"message": "Report deleted successfully"}

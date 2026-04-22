@@ -13,7 +13,7 @@
 - [x] 前端：实现健康事件时间轴组件。
 - [ ] 前端：实现 AI 化验单报告的卡片仪表盘展示与悬浮对话助手（移至 Phase 3）。
 
-## Phase 3: AI 化验单模块 🔄 (进行中)
+## Phase 3: AI 化验单模块 ✅ (2026-04-22 完成)
 - [x] 后端：实现文件上传接口 (`/api/uploads/`)
 - [x] 后端：增强 AI 分析服务，支持结构化数据解析
 - [x] 后端：实现报告创建和对话接口 (`/api/reports/`)
@@ -22,8 +22,10 @@
 - [x] 前端：实现报告卡片展示 (`ReportCard`)
 - [x] 前端：实现悬浮对话助手 (`ChatAssistant`)
 - [x] 前端：更新 Reports 页面集成所有组件
-- [ ] 测试：端到端测试文件上传和 AI 分析流程
-- [ ] 文档：更新 API 文档和组件说明
+- [x] 测试：后端 API 测试（上传、报告 CRUD、对话）— 10 tests passing
+- [x] 测试：前端组件测试（ReportCard）— 3 tests passing
+- [x] 文档：API 文档 (`docs/API.md`)
+- [x] 文档：组件文档 (`docs/Components.md`)
 
 ## Phase 4: 完善与部署 ⏳ (待开始)
 - [ ] 实现基础登录/Token 鉴权。
