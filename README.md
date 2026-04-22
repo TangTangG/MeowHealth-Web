@@ -8,7 +8,7 @@
 |------|------|----------|
 | Phase 1: 基础设施搭建 | ✅ 完成 | 2026-04-11 |
 | Phase 2: 核心功能实现 | ✅ 完成 | 2026-04-18 |
-| Phase 3: AI 化验单模块 | ✅ 完成 | 2026-04-18 |
+| Phase 3: AI 化验单模块 | ✅ 完成 | 2026-04-22 |
 | Phase 4: 完善与部署 | ⏳ 待开始 | - |
 
 ## 技术栈
@@ -47,6 +47,22 @@ npm run dev
 
 前端服务运行在 http://localhost:5173
 
+## 测试
+
+### 后端测试
+
+```bash
+cd backend
+python3 -m pytest tests/ -v
+```
+
+### 前端测试
+
+```bash
+cd frontend
+npx vitest run
+```
+
 ## 功能清单
 
 ### Phase 2 已完成 ✅
@@ -64,6 +80,8 @@ npm run dev
 - **报告展示**: 卡片式仪表盘，按系统分类（血液/肝脏/肾脏），异常高亮
 - **悬浮对话助手**: 基于当前报告上下文的多轮对话，快捷提问
 - **报告管理**: 列表展示、查看详情、删除报告
+- **测试覆盖**: 后端 10 个 API 测试 + 前端 3 个组件测试
+- **文档**: API 文档 (`docs/API.md`) + 组件文档 (`docs/Components.md`)
 
 ## 项目结构
 
@@ -97,8 +115,11 @@ MeowHealth-Web/
 - 需求文档：`docs/PRD.md`
 - 技术设计：`docs/SystemDesign.md`
 - 数据库设计：`docs/DatabaseSchema.md`
+- API 文档：`docs/API.md`
+- 组件文档：`docs/Components.md`
 - 交互设计规范：`docs/superpowers/specs/2026-04-09-ai-report-analysis-design.md`
 - Phase 2 计划：`docs/superpowers/plans/2026-04-17-phase2-detailed.md`
+- Phase 3 补全计划：`docs/superpowers/plans/2026-04-22-phase3-completion.md`
 
 ## 设计亮点
 
