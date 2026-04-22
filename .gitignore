@@ -47,3 +47,4 @@ coverage/
 .temp/
 tmp/
 .worktrees/
+__pycache__/
