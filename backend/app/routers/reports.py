@@ -5,9 +5,10 @@ from datetime import datetime
 import uuid
 
 from app.core.database import get_db
-from app.models.models import HealthRecord, HealthIndicator, ReportAttachment, AIChatMessage
+from app.models.models import HealthRecord, HealthIndicator, ReportAttachment, AIChatMessage, Cat, WeightLog
 from app.schemas.schemas import ReportCreate, ReportResponse, ChatMessageCreate, ChatMessageResponse
-from app.services.ai_service import analyze_report, chat_about_report
+from app.services.ai_service import chat_about_report
+from app.ai.orchestrator import MedicalOrchestrator
 
 router = APIRouter(prefix="/api/reports", tags=["reports"])
 
@@ -22,7 +23,29 @@ async def create_report_from_upload(
     db: Session = Depends(get_db)
 ):
     """分析上传的文件并创建报告"""
-    analysis_result = analyze_report(file_path, mime_type)
+    # 组装 cat_profile
+    cat = db.query(Cat).filter(Cat.id == cat_id).first()
+    if not cat:
+        raise HTTPException(404, "猫咪档案不存在")
+
+    latest_weight = db.query(WeightLog).filter(WeightLog.cat_id == cat_id).order_by(WeightLog.date.desc()).first()
+    current_weight = latest_weight.value if latest_weight else None
+
+    weight_status = "normal"
+    if current_weight and cat.target_weight_min and cat.target_weight_max:
+        if current_weight > cat.target_weight_max:
+            weight_status = "overweight"
+        elif current_weight < cat.target_weight_min:
+            weight_status = "underweight"
+
+    cat_profile = {
+        "breed": cat.breed,
+        "weight_status": weight_status,
+        "current_weight": current_weight
+    }
+
+    orchestrator = MedicalOrchestrator()
+    analysis_result = orchestrator.process_report(file_path, mime_type, cat_profile)
     
     if "error" in analysis_result:
         raise HTTPException(400, analysis_result["error"])
