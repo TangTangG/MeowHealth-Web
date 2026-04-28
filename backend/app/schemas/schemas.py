@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 
@@ -21,8 +21,8 @@ class CatResponse(CatBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 # WeightLog schemas
 class WeightLogBase(BaseModel):
@@ -39,8 +39,8 @@ class WeightLogResponse(WeightLogBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 # HealthRecord schemas
 class HealthRecordBase(BaseModel):
@@ -60,8 +60,8 @@ class HealthRecordResponse(HealthRecordBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 # HealthIndicator schemas
 class HealthIndicatorBase(BaseModel):
@@ -83,8 +83,8 @@ class HealthIndicatorResponse(HealthIndicatorBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 # Reminder schemas
 class ReminderBase(BaseModel):
@@ -104,8 +104,8 @@ class ReminderResponse(ReminderBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 # ReportAttachment schemas
 class ReportAttachmentBase(BaseModel):
@@ -118,8 +118,8 @@ class ReportAttachmentResponse(ReportAttachmentBase):
     id: str
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 # Report schemas
 class ReportBase(BaseModel):
@@ -144,8 +144,8 @@ class ReportResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 # Chat schemas
 class ChatMessageCreate(BaseModel):
@@ -161,5 +161,5 @@ class ChatMessageResponse(BaseModel):
     token_usage: Optional[int] = None
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+

@@ -1,7 +1,7 @@
 import google.generativeai as genai
 import json
-import re
 from typing import Dict, Any, List
+from app.ai.utils import clean_and_parse_json
 
 LAB_ANALYSIS_PROMPT_TEMPLATE = """你是一位资深兽医病理学家。请根据提取的化验数据和所提供的医学知识库，判定指标的异常状态，并给出专业的医学解释和总评。
 
@@ -55,12 +55,12 @@ class LabAnalyzer:
         try:
             response = self.model.generate_content(prompt)
             text = response.text
-            json_match = re.search(r'\{[\s\S]*\}', text)
-            if json_match:
-                try:
-                    return json.loads(json_match.group())
-                except json.JSONDecodeError as e:
-                    return {"error": f"JSON 解析失败: {str(e)}", "raw": text}
-            return {"error": "未能在结果中找到合法的 JSON", "raw": text}
+            try:
+                result = clean_and_parse_json(text)
+                if isinstance(result, dict):
+                    return result
+                return {"error": "返回的 JSON 不是字典结构", "raw": text}
+            except Exception as e:
+                return {"error": f"JSON 提取失败: {str(e)}", "raw": text}
         except Exception as e:
             return {"error": f"病理分析失败: {str(e)}"}

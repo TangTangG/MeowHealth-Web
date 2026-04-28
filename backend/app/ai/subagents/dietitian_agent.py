@@ -1,7 +1,7 @@
 import google.generativeai as genai
 import json
-import re
 from typing import Dict, Any, List
+from app.ai.utils import clean_and_parse_json
 
 DIETITIAN_PROMPT_TEMPLATE = """你是一位宠物临床营养师。请根据猫咪的病理诊断摘要、具体的异常指标，以及提供的饮食护理知识库，为用户输出可执行的建议列表。
 
@@ -56,13 +56,14 @@ class DietitianAgent:
         try:
             response = self.model.generate_content(prompt)
             text = response.text
-            json_match = re.search(r'\{[\s\S]*\}', text)
-            if json_match:
-                try:
-                    res = json.loads(json_match.group())
-                    return res.get("recommendations", [])
-                except json.JSONDecodeError:
-                    return []
-            return []
+            try:
+                result = clean_and_parse_json(text)
+                if isinstance(result, dict):
+                    return result.get("recommendations", [])
+                elif isinstance(result, list):
+                    return result
+                return []
+            except Exception:
+                return []
         except Exception:
             return []

@@ -1,7 +1,7 @@
 import google.generativeai as genai
 import json
-import re
 from typing import Dict, Any
+from app.ai.utils import clean_and_parse_json
 
 VISION_EXTRACTION_PROMPT = """你是一个高精度的医疗 OCR 提取器。你的唯一任务是从化验单图片中提取所有检测指标的字面数值，不要做任何医学评估。
 
@@ -40,12 +40,12 @@ class VisionAgent:
             ])
             
             text = response.text
-            json_match = re.search(r'\{[\s\S]*\}', text)
-            if json_match:
-                try:
-                    return json.loads(json_match.group())
-                except json.JSONDecodeError as e:
-                    return {"error": f"JSON 解析失败: {str(e)}", "raw": text}
-            return {"error": "未能在结果中找到合法的 JSON", "raw": text}
+            try:
+                result = clean_and_parse_json(text)
+                if isinstance(result, dict):
+                    return result
+                return {"error": "返回的 JSON 不是字典结构", "raw": text}
+            except Exception as e:
+                return {"error": f"JSON 提取失败: {str(e)}", "raw": text}
         except Exception as e:
             return {"error": f"OCR 提取失败: {str(e)}"}
