@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertCircle, TrendingUp, TrendingDown, Bot, BrainCircuit, Activity, HeartPulse, Send, MessageCircle } from 'lucide-react';
 
 interface Indicator {
   id: string;
@@ -14,9 +14,11 @@ interface Indicator {
 }
 
 interface ReportCardProps {
+  id: string;
   title: string;
   date: string;
   summary: string;
+  note?: string | null;
   indicators: Indicator[];
   recommendations: string[];
 }
@@ -27,15 +29,15 @@ const IndicatorCard: React.FC<{ indicator: Indicator }> = ({ indicator }) => {
   
   const getStatusColor = () => {
     if (!indicator.is_abnormal) return 'bg-green-50 border-green-200';
-    if (isHigh) return 'bg-red-50 border-red-200';
-    if (isLow) return 'bg-yellow-50 border-yellow-200';
+    if (isHigh) return 'bg-red-50 border-red-200 shadow-sm shadow-red-100';
+    if (isLow) return 'bg-yellow-50 border-yellow-200 shadow-sm shadow-yellow-100';
     return 'bg-gray-50 border-gray-200';
   };
   
   const getStatusIcon = () => {
     if (!indicator.is_abnormal) return null;
-    if (isHigh) return <TrendingUp className="w-4 h-4 text-red-500" />;
-    if (isLow) return <TrendingDown className="w-4 h-4 text-yellow-500" />;
+    if (isHigh) return <TrendingUp className="w-4 h-4 text-red-500 animate-pulse" />;
+    if (isLow) return <TrendingDown className="w-4 h-4 text-yellow-500 animate-pulse" />;
     return <AlertCircle className="w-4 h-4 text-orange-500" />;
   };
 
@@ -48,20 +50,24 @@ const IndicatorCard: React.FC<{ indicator: Indicator }> = ({ indicator }) => {
           {getStatusIcon()}
         </div>
         <div className="text-right">
-          <span className={`text-lg font-bold ${indicator.is_abnormal ? 'text-red-600' : 'text-gray-900'}`}>
+          <span className={`text-lg font-bold ${indicator.is_abnormal ? (isHigh ? 'text-red-600' : 'text-yellow-600') : 'text-gray-900'}`}>
             {indicator.value !== null ? indicator.value.toFixed(2) : '-'}
           </span>
           <span className="text-sm text-gray-500 ml-1">{indicator.unit}</span>
         </div>
       </div>
       
-      <div className="mt-2 text-sm text-gray-600">
-        参考范围: {indicator.reference_min !== null ? indicator.reference_min : '-'} - 
-        {indicator.reference_max !== null ? indicator.reference_max : '-'} {indicator.unit}
+      <div className="mt-1 text-xs text-gray-500">
+        参考范围: {indicator.reference_min !== null ? indicator.reference_min : '-'} ~ {indicator.reference_max !== null ? indicator.reference_max : '-'} {indicator.unit}
       </div>
       
       {indicator.explanation && (
-        <p className="mt-2 text-sm text-gray-600">{indicator.explanation}</p>
+        <div className="mt-3 text-sm text-gray-800 bg-white/70 p-2.5 rounded-md border border-white/50">
+          <span className="font-semibold text-gray-900 flex items-center gap-1 mb-1">
+            <BrainCircuit className="w-3.5 h-3.5 text-blue-500" /> AI 诊断
+          </span>
+          {indicator.explanation}
+        </div>
       )}
     </div>
   );
@@ -103,12 +109,24 @@ const IndicatorCategory: React.FC<{ title: string; indicators: Indicator[] }> = 
 };
 
 export const ReportCard: React.FC<ReportCardProps> = ({ 
+  id,
   title, 
   date, 
-  summary, 
+  summary,
+  note,
   indicators, 
   recommendations 
 }) => {
+  // 解析 agent trace
+  let traceData = null;
+  if (note) {
+    try {
+      traceData = JSON.parse(note);
+    } catch (e) {
+      // 解析失败则忽略
+    }
+  }
+
   // 按系统分类指标
   const categories = {
     '血液系统': indicators.filter(i => ['WBC', 'RBC', 'HGB', 'PLT', 'HCT'].includes(i.name)),
@@ -124,10 +142,47 @@ export const ReportCard: React.FC<ReportCardProps> = ({
       {/* 顶部概览 */}
       <div className="border-b pb-4">
         <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-        <p className="text-sm text-gray-500 mt-1">{new Date(date).toLocaleDateString('zh-CN')}</p>
+        <div className="flex items-center gap-2 mt-1">
+          <p className="text-sm text-gray-500">{new Date(date).toLocaleDateString('zh-CN')}</p>
+          
+          {/* Personalized Badges */}
+          {traceData?.skills_loaded?.breed && (
+            <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-medium border border-purple-200">
+              🧬 {traceData.skills_loaded.breed}专属分析
+            </span>
+          )}
+          {traceData?.skills_loaded?.weight_status && traceData.skills_loaded.weight_status !== "normal" && (
+            <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 text-xs font-medium border border-orange-200">
+              ⚠️ {traceData.skills_loaded.weight_status === "overweight" ? "减脂干预" : "增肌干预"}
+            </span>
+          )}
+        </div>
         
-        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-          <p className="text-blue-900 font-medium">{summary}</p>
+        {/* Agent Orchestration Trace */}
+        {traceData && (
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-600">
+            <div className="font-semibold text-gray-700 mb-2 flex items-center gap-1">
+              <Activity className="w-3.5 h-3.5" /> AI 多智能体工作流执行记录
+            </div>
+            <div className="flex flex-col gap-1.5 ml-1 border-l-2 border-blue-200 pl-3">
+              <div>
+                <span className="font-medium text-blue-700">1. Vision Agent (提取)</span>：成功从图像中提取 {traceData.orchestration?.vision_agent?.extracted_count || indicators.length} 项数值结构。
+              </div>
+              <div>
+                <span className="font-medium text-blue-700">2. Lab Analyzer (病理)</span>：结合通用医学与{traceData.skills_loaded?.breed ? `[${traceData.skills_loaded.breed}]` : '通用'}品系特异性，发现 {traceData.orchestration?.lab_analyzer?.abnormal_count} 项异常。
+              </div>
+              <div>
+                <span className="font-medium text-blue-700">3. Dietitian Agent (营养)</span>：针对上述异常，生成 {traceData.orchestration?.dietitian_agent?.recommendations_count || recommendations.length} 条针对性护理建议。
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+          <p className="text-blue-900 font-medium flex items-start gap-2">
+            <Bot className="w-5 h-5 mt-0.5 text-blue-600 shrink-0" />
+            <span>{summary}</span>
+          </p>
         </div>
       </div>
 
@@ -161,6 +216,26 @@ export const ReportCard: React.FC<ReportCardProps> = ({
           </ul>
         </div>
       )}
+
+      {/* AI Chat 追问区域 */}
+      <div className="pt-4 border-t mt-6">
+        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <MessageCircle className="w-5 h-5 text-blue-500" /> 对话追问
+        </h3>
+        <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              placeholder="向主治医生提问，例如：这些处方粮建议买哪个牌子？" 
+              className="flex-1 rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3 border outline-none"
+            />
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1">
+              <Send className="w-4 h-4" /> 提问
+            </button>
+          </div>
+          <p className="text-xs text-slate-500 mt-2 ml-1">该追问将自动携带上述品种体型以及所有的化验数据与诊断结论作为 Context。</p>
+        </div>
+      </div>
     </div>
   );
 };
