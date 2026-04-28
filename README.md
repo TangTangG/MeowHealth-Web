@@ -9,13 +9,14 @@
 | Phase 1: 基础设施搭建 | ✅ 完成 | 2026-04-11 |
 | Phase 2: 核心功能实现 | ✅ 完成 | 2026-04-18 |
 | Phase 3: AI 化验单模块 | ✅ 完成 | 2026-04-22 |
-| Phase 4: 完善与部署 | ⏳ 待开始 | - |
+| Phase 4.1: AI 多智能体架构重构 (Orchestrator) | ✅ 完成 | 2026-04-29 |
+| Phase 4.2: 完善与部署 | ⏳ 待开始 | - |
 
 ## 技术栈
 
 - **后端**: Python 3.11+, FastAPI, SQLAlchemy, SQLite
 - **前端**: React 18, TypeScript, Vite, Tailwind CSS, Recharts, Lucide React
-- **AI**: Gemini API (Phase 3)
+- **AI**: Gemini API (基于 Multi-Agent 架构: Orchestrator + Vision/Lab/Dietitian)
 
 ## 快速开始
 
@@ -123,7 +124,9 @@ MeowHealth-Web/
 
 ## 设计亮点
 
+- **多智能体 AI 架构 (Phase 4.1 新增)**：彻底摒弃单体大模型引发的幻觉，采用 `Orchestrator` 编排 `VisionAgent` (纯结构化提取)、`LabAnalyzer` (病理分析)、`DietitianAgent` (营养师) 的协作流。
+- **千猫千面动态诊疗**：系统内置基于 Markdown 的知识技能树 (Skills)。根据猫咪品种 (如缅因猫防心脏病、银渐层防肾病) 和体型 (肥胖防脂肪肝) 动态挂载特定规则，实现精准医疗警告与饮食建议。
 - **Dashboard 概览页**：整合待办提醒、体重趋势图、近期健康事件流水。
-- **AI 化验单分析**：采用「卡片仪表盘主展示 + 悬浮对话助手辅助答疑」的融合交互方案。
+- **沉浸式 AI 报告交互**：脉冲特效预警异常指标，多智能体流转步骤公示，并自带记忆上下文的主治医生 1V1 追问聊天组件。
 - **上传入口**：独立的拖拽多文件上传区 (支持 PDF/JPG/PNG)。
 - **多猫支持**：侧边栏嵌入猫咪切换器，方便多猫家庭使用。
