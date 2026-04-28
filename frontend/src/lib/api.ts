@@ -74,6 +74,14 @@ export const deleteReport = (reportId: string) =>
 export const analyzeReport = (reportId: string) =>
   api.post(`/reports/${reportId}/analyze`).then(r => r.data);
 
+// ========== 报告聊天 API ==========
+
+export const getReportChatHistory = (reportId: string) =>
+  api.get(`/reports/${reportId}/chat/history`).then(r => r.data);
+
+export const sendReportChatMessage = (reportId: string, content: string) =>
+  api.post(`/reports/${reportId}/chat`, { content }).then(r => r.data);
+
 // ========== 设置 API ==========
 
 export const setApiKey = (apiKey: string) =>

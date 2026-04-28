@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, AlertCircle, TrendingUp, TrendingDown, Bot, BrainCircuit, Activity, HeartPulse, Send, MessageCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronDown, ChevronUp, AlertCircle, TrendingUp, TrendingDown, Bot, BrainCircuit, Activity, HeartPulse, Send, MessageCircle, User, Loader2 } from 'lucide-react';
+import { getReportChatHistory, sendReportChatMessage } from '../lib/api';
+import { ChatMessage } from '../types';
 
 interface Indicator {
   id: string;
@@ -127,6 +129,43 @@ export const ReportCard: React.FC<ReportCardProps> = ({
     }
   }
 
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isChatExpanded, setIsChatExpanded] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isChatExpanded && chatMessages.length === 0) {
+      // 首次展开时加载历史记录
+      getReportChatHistory(id).then(msgs => setChatMessages(msgs)).catch(console.error);
+    }
+  }, [isChatExpanded, id]);
+
+  useEffect(() => {
+    // 新消息滚动到底部
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+  const handleSendMessage = async () => {
+    if (!chatInput.trim() || isChatLoading) return;
+    
+    const userMsg = { id: Date.now().toString(), record_id: id, role: 'user' as const, content: chatInput.trim(), created_at: new Date().toISOString() };
+    setChatMessages(prev => [...prev, userMsg]);
+    setChatInput('');
+    setIsChatLoading(true);
+
+    try {
+      const response = await sendReportChatMessage(id, userMsg.content);
+      setChatMessages(prev => [...prev, response]);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // 可选：展示错误提示
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
   // 按系统分类指标
   const categories = {
     '血液系统': indicators.filter(i => ['WBC', 'RBC', 'HGB', 'PLT', 'HCT'].includes(i.name)),
@@ -219,22 +258,80 @@ export const ReportCard: React.FC<ReportCardProps> = ({
 
       {/* AI Chat 追问区域 */}
       <div className="pt-4 border-t mt-6">
-        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <MessageCircle className="w-5 h-5 text-blue-500" /> 对话追问
-        </h3>
-        <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-          <div className="flex gap-2">
-            <input 
-              type="text" 
-              placeholder="向主治医生提问，例如：这些处方粮建议买哪个牌子？" 
-              className="flex-1 rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3 border outline-none"
-            />
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1">
-              <Send className="w-4 h-4" /> 提问
-            </button>
+        <button 
+          onClick={() => setIsChatExpanded(!isChatExpanded)}
+          className="font-semibold text-gray-900 mb-2 flex items-center gap-2 hover:text-blue-600 transition-colors w-full text-left"
+        >
+          <MessageCircle className="w-5 h-5 text-blue-500" /> 
+          主治医生一对一追问 (Dietitian Agent)
+          {isChatExpanded ? <ChevronUp className="w-4 h-4 ml-auto" /> : <ChevronDown className="w-4 h-4 ml-auto" />}
+        </button>
+        
+        {isChatExpanded && (
+          <div className="bg-slate-50 rounded-lg border border-slate-200 mt-3 flex flex-col h-[400px]">
+            {/* 消息列表 */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {chatMessages.length === 0 ? (
+                <div className="text-center text-sm text-slate-500 my-auto h-full flex items-center justify-center">
+                  你可以向我提问关于这份化验单的任何细节。
+                </div>
+              ) : (
+                chatMessages.map(msg => (
+                  <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                      msg.role === 'user' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                    }`}>
+                      {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                    </div>
+                    <div className={`max-w-[75%] rounded-2xl p-3 text-sm ${
+                      msg.role === 'user' 
+                        ? 'bg-blue-600 text-white rounded-tr-none' 
+                        : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none shadow-sm whitespace-pre-wrap'
+                    }`}>
+                      {msg.content}
+                    </div>
+                  </div>
+                ))
+              )}
+              {isChatLoading && (
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                    <Bot className="w-4 h-4" />
+                  </div>
+                  <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-3 text-sm shadow-sm flex items-center">
+                    <Loader2 className="w-4 h-4 animate-spin text-slate-400 mr-2" /> 医生正在思考...
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* 输入框 */}
+            <div className="p-3 bg-white border-t rounded-b-lg">
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={chatInput}
+                  onChange={e => setChatInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="向主治医生提问，例如：这些处方粮建议买哪个牌子？" 
+                  className="flex-1 rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3 border outline-none"
+                  disabled={isChatLoading}
+                />
+                <button 
+                  onClick={handleSendMessage}
+                  disabled={isChatLoading || !chatInput.trim()}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
+                >
+                  <Send className="w-4 h-4" /> 发送
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1.5 ml-1 flex items-center gap-1">
+                <BrainCircuit className="w-3 h-3" /> 该追问将自动携带上述品种体型以及所有的化验数据与诊断结论作为 Context。
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-slate-500 mt-2 ml-1">该追问将自动携带上述品种体型以及所有的化验数据与诊断结论作为 Context。</p>
-        </div>
+        )}
       </div>
     </div>
   );

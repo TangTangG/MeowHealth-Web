@@ -94,3 +94,12 @@ export interface HealthIndicator {
   is_abnormal: boolean;
   explanation?: string;
 }
+
+// 聊天消息
+export interface ChatMessage {
+  id: string;
+  record_id: string;
+  role: 'user' | 'model';
+  content: string;
+  created_at: string;
+}
