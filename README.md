@@ -34,7 +34,8 @@
 ### 1. 克隆项目
 
 ```bash
-cd /Users/gu/openclaw_workspace/projects/MeowHealth-Web
+git clone https://github.com/TangTangG/MeowHealth-Web.git
+cd MeowHealth-Web
 ```
 
 ### 2. 启动后端
