@@ -27,7 +27,15 @@
 - [x] 文档：API 文档 (`docs/API.md`)
 - [x] 文档：组件文档 (`docs/Components.md`)
 
-## Phase 4: 完善与部署 ⏳ (待开始)
+## Phase 4: 完善与重构
+### 4.1 AI 多智能体架构重构 (✅ 2026-04-29 完成)
+- [x] 重构单体 AI 分析，引入 Orchestrator + Subagents (Vision/Lab/Dietitian) 架构。
+- [x] 实现基于 Markdown 的分层 Skills 体系（通用/品种特异/体型特异）。
+- [x] 更新 `ReportCard.tsx`：增加追踪溯源 Trace 面板与个性化干预 Badges。
+- [x] 实现并绑定自带上下文记忆的 AI 追问聊天组件。
+- [x] 修复后端 Pydantic v2 和 FastAPI lifespan 等技术债。
+
+### 4.2 部署与安全准备 ⏳ (待开始)
 - [ ] 实现基础登录/Token 鉴权。
 - [ ] 编写 Dockerfile 和 docker-compose.yml。
 - [ ] 编写部署指南。
