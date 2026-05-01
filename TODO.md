@@ -35,13 +35,13 @@
 - [x] 实现并绑定自带上下文记忆的 AI 追问聊天组件。
 - [x] 修复后端 Pydantic v2 和 FastAPI lifespan 等技术债。
 
-### 4.2 部署与安全准备 ⏳ (待开始)
-- [ ] 实现基础登录/Token 鉴权。
-- [ ] 编写 Dockerfile 和 docker-compose.yml。
-- [ ] 编写部署指南。
+### 4.2 部署与安全准备 ✅ (2026-05-01 完成)
+- [x] ~~实现基础登录/Token 鉴权。（移除，不需要）~~
+- [x] 编写 Dockerfile 和 docker-compose.yml。
+- [x] 编写部署指南。
 
 ## Phase 5: Agent 架构演进与演化 (Future 🚀)
-- [ ] **引入 Critic Agent (主任医师审查机制)**：在最终结果输出前进行交叉验证，构成 Actor-Critic 纠错架构，确保营养建议与病理分析不发生医学冲突。
-- [ ] **引入时间序列推理 (Cross-Temporal Reasoning)**：新增 HistoryAnalystAgent，结合过去的健康记录、体重趋势进行跨时间周期的纵向动态诊断（如早期慢性病预警）。
-- [ ] **引入 RAG 动态外脑 (Research Agent)**：升级静态 Markdown 技能树，当遭遇疑难指标时自动检索最新兽医文献、临床指南数据库，实现医学知识自我更新。
-- [ ] **进化为 Actionable Agent (工具调用)**：打破纯文本诊断，赋予 Agent 调用内部/外部 API 的能力。例如分析后自动调用 `/reminders` 生成 30 天后的复查提醒，或生成对应处方粮的外部购买清单。
+- [x] **引入 Critic Agent (主任医师审查机制)**：在最终结果输出前进行交叉验证，构成 Actor-Critic 纠错架构，确保营养建议与病理分析不发生医学冲突。
+- [x] **引入时间序列推理 (Cross-Temporal Reasoning)**：新增 HistoryAnalystAgent，结合过去的健康记录、体重趋势进行跨时间周期的纵向动态诊断（如早期慢性病预警）。
+- [x] **引入 RAG 动态外脑 (Research Agent)**：升级静态 Markdown 技能树，当遭遇疑难指标时自动检索最新兽医文献、临床指南数据库，实现医学知识自我更新。
+- [x] **进化为 Actionable Agent (工具调用)**：打破纯文本诊断，赋予 Agent 调用内部/外部 API 的能力。例如分析后自动调用 `/reminders` 生成 30 天后的复查提醒，或生成对应处方粮的外部购买清单。

@@ -1,17 +1,17 @@
 # MeowHealth Web
 
-"猫咪健康守护" 网页版，一个支持桌面和移动端的私有化单用户猫咪健康管理系统。核心主打 **基于多智能体架构的 AI 兽医诊疗引擎**，提供“千猫千面”的个性化健康分析。
+"猫咪健康守护" 网页版,一个支持桌面和移动端的私有化单用户猫咪健康管理系统。核心主打 **基于多智能体架构的 AI 兽医诊疗引擎**，提供"千猫千面"的个性化健康分析。包含 7 个专业 Agent 协作：VisionAgent（OCR提取）→ HistoryAnalystAgent（历史趋势）→ LabAnalyzer（病理分析）→ ResearchAgent（知识补充）→ DietitianAgent（营养建议）→ CriticAgent（主任审查）→ ActionableAgent（自动生成复查提醒和购物清单）。
 
-## 🧠 核心特性：多智能体 AI 诊疗引擎
+## 🧠 核心特性:多智能体 AI 诊疗引擎
 
-本项目彻底摒弃了传统单体大模型的粗放式分析（极易产生幻觉和遗漏），在 Phase 4.1 中重构了一套对标专业兽医院工作流的 **Multi-Agent 专家组**，将 AI 作为系统的绝对核心：
+本项目彻底摒弃了传统单体大模型的粗放式分析(极易产生幻觉和遗漏),在 Phase 4.1 中重构了一套对标专业兽医院工作流的 **Multi-Agent 专家组**,将 AI 作为系统的绝对核心:
 
-*   **👨‍⚕️ Orchestrator (主控中枢)**：动态根据当前猫咪档案，向诊断流中挂载特异性的医疗技能（Skills）。
-*   **📷 VisionAgent (提取技师)**：高度克制。仅负责医疗影像的 OCR 结构化数值提取，绝不越权做病理评估，将数据遗漏率降至最低。
-*   **🔬 LabAnalyzer (病理医生)**：基于提取的化验数据与外置医学 SOP 进行比对，输出异常标志与病理诊断。
-*   **🥩 DietitianAgent (营养师)**：接收病理异常列表，开具严格针对病情的饮食、用药与生活护理处方。
-*   **🧬 千猫千面 (Dynamic Skills)**：解耦的 Markdown 知识树架构。如果是“缅因猫”，系统会自动拉高心脏病（HCM）的敏感度；如果是“超重猫”，系统会强制触发脂肪肝防御并禁止断食。
-*   **💬 主治医生 1V1 追问**：报告底部内置了带有完整上下文记忆的 Chat 组件，用户可针对化验单明细直接向 Agent 团队追问方案。
+*   **👨‍⚕️ Orchestrator (主控中枢)**:动态根据当前猫咪档案,向诊断流中挂载特异性的医疗技能(Skills)。
+*   **📷 VisionAgent (提取技师)**:高度克制。仅负责医疗影像的 OCR 结构化数值提取,绝不越权做病理评估,将数据遗漏率降至最低。
+*   **🔬 LabAnalyzer (病理医生)**:基于提取的化验数据与外置医学 SOP 进行比对,输出异常标志与病理诊断。
+*   **🥩 DietitianAgent (营养师)**:接收病理异常列表,开具严格针对病情的饮食、用药与生活护理处方。
+*   **🧬 千猫千面 (Dynamic Skills)**:解耦的 Markdown 知识树架构。如果是"缅因猫",系统会自动拉高心脏病(HCM)的敏感度;如果是"超重猫",系统会强制触发脂肪肝防御并禁止断食。
+*   **💬 主治医生 1V1 追问**:报告底部内置了带有完整上下文记忆的 Chat 组件,用户可针对化验单明细直接向 Agent 团队追问方案。
 
 ## 📍 当前状态
 
@@ -21,6 +21,7 @@
 | Phase 2: 核心功能实现 | ✅ 完成 | 2026-04-18 |
 | Phase 3: AI 化验单模块 | ✅ 完成 | 2026-04-22 |
 | Phase 4.1: AI 多智能体架构重构 (Orchestrator) | ✅ 完成 | 2026-04-29 |
+| Phase 5: Agent 架构演进与演化 | ✅ 完成 | 2026-05-01 |
 | Phase 4.2: 完善与部署 | ⏳ 待开始 | - |
 
 ## 🛠 技术栈
@@ -60,6 +61,40 @@ npm run dev
 
 前端服务运行在 http://localhost:5173
 
+## 🐳 Docker 部署(推荐)
+
+### 前置要求
+- Docker
+- Docker Compose
+
+### 一键启动
+
+```bash
+cd MeowHealth-Web
+docker-compose up -d --build
+```
+
+启动后访问:
+- 前端:http://localhost:3000
+- 后端 API:http://localhost:8000
+- API 文档:http://localhost:8000/docs
+
+### 停止服务
+
+```bash
+docker-compose down
+```
+
+### 查看日志
+
+```bash
+docker-compose logs -f
+```
+
+### 数据持久化
+
+SQLite 数据库存储在 Docker 命名卷 `meowhealth-db` 中,即使容器删除数据也不会丢失。
+
 ## 测试
 
 ### 后端测试
@@ -81,17 +116,17 @@ npx vitest run
 ### Phase 2 已完成 ✅
 
 - **猫咪管理**: 添加、删除、查看猫咪档案
-- **体重记录**: 记录体重，查看趋势图表
+- **体重记录**: 记录体重,查看趋势图表
 - **待办提醒**: 创建、完成、删除提醒事项
 - **健康记录**: 查看健康事件时间轴
 - **Dashboard**: 统计卡片、体重图表、待办列表、近期动态
 
 ### Phase 3 已完成 ✅
 
-- **文件上传**: 拖拽上传 PDF/JPG/PNG，支持多文件，显示上传进度
+- **文件上传**: 拖拽上传 PDF/JPG/PNG,支持多文件,显示上传进度
 - **AI 化验单分析**: Gemini OCR 自动提取指标、标记异常、生成建议
-- **报告展示**: 卡片式仪表盘，按系统分类（血液/肝脏/肾脏），异常高亮
-- **悬浮对话助手**: 基于当前报告上下文的多轮对话，快捷提问
+- **报告展示**: 卡片式仪表盘,按系统分类(血液/肝脏/肾脏),异常高亮
+- **悬浮对话助手**: 基于当前报告上下文的多轮对话,快捷提问
 - **报告管理**: 列表展示、查看详情、删除报告
 - **测试覆盖**: 后端 10 个 API 测试 + 前端 3 个组件测试
 - **文档**: API 文档 (`docs/API.md`) + 组件文档 (`docs/Components.md`)
@@ -125,20 +160,20 @@ MeowHealth-Web/
 
 ## 文档导航
 
-- 需求文档：`docs/PRD.md`
-- 技术设计：`docs/SystemDesign.md`
-- 数据库设计：`docs/DatabaseSchema.md`
-- API 文档：`docs/API.md`
-- 组件文档：`docs/Components.md`
-- 交互设计规范：`docs/superpowers/specs/2026-04-09-ai-report-analysis-design.md`
-- Phase 2 计划：`docs/superpowers/plans/2026-04-17-phase2-detailed.md`
-- Phase 3 补全计划：`docs/superpowers/plans/2026-04-22-phase3-completion.md`
+- 需求文档:`docs/PRD.md`
+- 技术设计:`docs/SystemDesign.md`
+- 数据库设计:`docs/DatabaseSchema.md`
+- API 文档:`docs/API.md`
+- 组件文档:`docs/Components.md`
+- 交互设计规范:`docs/superpowers/specs/2026-04-09-ai-report-analysis-design.md`
+- Phase 2 计划:`docs/superpowers/plans/2026-04-17-phase2-detailed.md`
+- Phase 3 补全计划:`docs/superpowers/plans/2026-04-22-phase3-completion.md`
 
 ## 设计亮点
 
-- **多智能体 AI 架构 (Phase 4.1 新增)**：彻底摒弃单体大模型引发的幻觉，采用 `Orchestrator` 编排 `VisionAgent` (纯结构化提取)、`LabAnalyzer` (病理分析)、`DietitianAgent` (营养师) 的协作流。
-- **千猫千面动态诊疗**：系统内置基于 Markdown 的知识技能树 (Skills)。根据猫咪品种 (如缅因猫防心脏病、银渐层防肾病) 和体型 (肥胖防脂肪肝) 动态挂载特定规则，实现精准医疗警告与饮食建议。
-- **Dashboard 概览页**：整合待办提醒、体重趋势图、近期健康事件流水。
-- **沉浸式 AI 报告交互**：脉冲特效预警异常指标，多智能体流转步骤公示，并自带记忆上下文的主治医生 1V1 追问聊天组件。
-- **上传入口**：独立的拖拽多文件上传区 (支持 PDF/JPG/PNG)。
-- **多猫支持**：侧边栏嵌入猫咪切换器，方便多猫家庭使用。
+- **多智能体 AI 架构 (Phase 4.1 新增)**:彻底摒弃单体大模型引发的幻觉,采用 `Orchestrator` 编排 `VisionAgent` (纯结构化提取)、`LabAnalyzer` (病理分析)、`DietitianAgent` (营养师) 的协作流。
+- **千猫千面动态诊疗**:系统内置基于 Markdown 的知识技能树 (Skills)。根据猫咪品种 (如缅因猫防心脏病、银渐层防肾病) 和体型 (肥胖防脂肪肝) 动态挂载特定规则,实现精准医疗警告与饮食建议。
+- **Dashboard 概览页**:整合待办提醒、体重趋势图、近期健康事件流水。
+- **沉浸式 AI 报告交互**:脉冲特效预警异常指标,多智能体流转步骤公示,并自带记忆上下文的主治医生 1V1 追问聊天组件。
+- **上传入口**:独立的拖拽多文件上传区 (支持 PDF/JPG/PNG)。
+- **多猫支持**:侧边栏嵌入猫咪切换器,方便多猫家庭使用。

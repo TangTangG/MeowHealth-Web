@@ -11,6 +11,9 @@ LAB_ANALYSIS_PROMPT_TEMPLATE = """你是一位资深兽医病理学家。请根�
 【品种/特性知识库 (必须优先遵守该库的放大警告规则)】
 {specific_knowledge}
 
+【历史趋势上下文】
+{historical_context}
+
 【原始提取数据】
 {vision_data}
 
@@ -41,7 +44,7 @@ class LabAnalyzer:
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel('gemini-2.0-flash')
 
-    def analyze(self, vision_data: Dict[str, Any], general_knowledge: str, specific_knowledge: str) -> Dict[str, Any]:
+    def analyze(self, vision_data: Dict[str, Any], general_knowledge: str, specific_knowledge: str, historical_context: str = "") -> Dict[str, Any]:
         """结合知识库进行数值比对和病理分析"""
         if "error" in vision_data:
             return vision_data
@@ -49,6 +52,7 @@ class LabAnalyzer:
         prompt = LAB_ANALYSIS_PROMPT_TEMPLATE.format(
             general_knowledge=general_knowledge,
             specific_knowledge=specific_knowledge if specific_knowledge else "无特殊品种警示。",
+            historical_context=historical_context if historical_context else "无历史记录",
             vision_data=json.dumps(vision_data, ensure_ascii=False, indent=2)
         )
 

@@ -163,3 +163,12 @@ class ChatMessageResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
+
+# Settings schemas
+class ApiKeySetting(BaseModel):
+    api_key: str
+
+class ApiKeyStatus(BaseModel):
+    is_set: bool
+    masked_key: Optional[str] = None
+

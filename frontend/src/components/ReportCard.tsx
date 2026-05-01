@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, AlertCircle, TrendingUp, TrendingDown, Bot, BrainCircuit, Activity, HeartPulse, Send, MessageCircle, User, Loader2 } from 'lucide-react';
-import { getReportChatHistory, sendReportChatMessage } from '../lib/api';
+import { ChevronDown, ChevronUp, AlertCircle, TrendingUp, TrendingDown, Bot, BrainCircuit, Activity, HeartPulse, Send, MessageCircle, User, Loader2, Sparkles, CalendarPlus, ShoppingCart } from 'lucide-react';
+import { getReportChatHistory, sendReportChatMessage, executeActions } from '../lib/api';
 import { ChatMessage } from '../types';
 
 interface Indicator {
@@ -135,6 +135,28 @@ export const ReportCard: React.FC<ReportCardProps> = ({
   const [isChatExpanded, setIsChatExpanded] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // Phase 5: Actionable Agent
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [actionResult, setActionResult] = useState<{
+    reminders_created: number;
+    shopping_list: Array<{ item: string; reason: string; priority: string }>;
+    reminders: Array<{ id: string; title: string; due_date: string }>;
+  } | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const handleExecuteActions = async () => {
+    setIsActionLoading(true);
+    setActionError(null);
+    try {
+      const result = await executeActions(id);
+      setActionResult(result);
+    } catch (error: any) {
+      setActionError(error?.response?.data?.detail || '生成行动失败，请稍后重试');
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isChatExpanded && chatMessages.length === 0) {
       // 首次展开时加载历史记录
@@ -208,10 +230,22 @@ export const ReportCard: React.FC<ReportCardProps> = ({
                 <span className="font-medium text-blue-700">1. Vision Agent (提取)</span>：成功从图像中提取 {traceData.orchestration?.vision_agent?.extracted_count || indicators.length} 项数值结构。
               </div>
               <div>
-                <span className="font-medium text-blue-700">2. Lab Analyzer (病理)</span>：结合通用医学与{traceData.skills_loaded?.breed ? `[${traceData.skills_loaded.breed}]` : '通用'}品系特异性，发现 {traceData.orchestration?.lab_analyzer?.abnormal_count} 项异常。
+                <span className="font-medium text-blue-700">2. History Analyst (历史)</span>：{traceData.orchestration?.history_analyst?.context || '首次分析，无历史记录对比'}。
               </div>
               <div>
-                <span className="font-medium text-blue-700">3. Dietitian Agent (营养)</span>：针对上述异常，生成 {traceData.orchestration?.dietitian_agent?.recommendations_count || recommendations.length} 条针对性护理建议。
+                <span className="font-medium text-blue-700">3. Lab Analyzer (病理)</span>：结合通用医学与{traceData.skills_loaded?.breed ? `[${traceData.skills_loaded.breed}]` : '通用'}品系特异性，发现 {traceData.orchestration?.lab_analyzer?.abnormal_count || indicators.filter(i => i.is_abnormal).length} 项异常。
+              </div>
+              <div>
+                <span className="font-medium text-blue-700">4. Research Agent (知识补充)</span>：对知识库未覆盖的异常指标进行文献级补充研究。
+              </div>
+              <div>
+                <span className="font-medium text-blue-700">5. Dietitian Agent (营养)</span>：针对上述异常，生成 {traceData.orchestration?.dietitian_agent?.recommendations_count || recommendations.length} 条针对性护理建议。
+              </div>
+              <div>
+                <span className="font-medium text-blue-700">6. Critic Agent (审查)</span>：交叉验证病理诊断与营养建议，确认无医学冲突。
+              </div>
+              <div>
+                <span className="font-medium text-blue-700">7. Actionable Agent (行动)</span>：支持自动生成复查提醒与购物清单。
               </div>
             </div>
           </div>
@@ -255,6 +289,66 @@ export const ReportCard: React.FC<ReportCardProps> = ({
           </ul>
         </div>
       )}
+
+      {/* Phase 5: 自动生成复查提醒 */}
+      <div className="border-t pt-4">
+        <button
+          onClick={handleExecuteActions}
+          disabled={isActionLoading}
+          className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-slate-300 disabled:to-slate-300 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm"
+        >
+          {isActionLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Sparkles className="w-4 h-4" />
+          )}
+          {isActionLoading ? 'AI 正在生成行动方案...' : '自动生成复查提醒与购物清单'}
+        </button>
+
+        {actionError && (
+          <p className="mt-2 text-sm text-red-600">{actionError}</p>
+        )}
+
+        {actionResult && (
+          <div className="mt-4 space-y-4">
+            {actionResult.reminders_created > 0 && (
+              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                <h4 className="font-semibold text-green-800 flex items-center gap-2 mb-2">
+                  <CalendarPlus className="w-4 h-4" /> 已创建 {actionResult.reminders_created} 个复查提醒
+                </h4>
+                <ul className="space-y-1.5">
+                  {actionResult.reminders.map(r => (
+                    <li key={r.id} className="text-sm text-green-700 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                      {r.title} — {new Date(r.due_date).toLocaleDateString('zh-CN')}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {actionResult.shopping_list.length > 0 && (
+              <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <h4 className="font-semibold text-amber-800 flex items-center gap-2 mb-2">
+                  <ShoppingCart className="w-4 h-4" /> 购物清单
+                </h4>
+                <ul className="space-y-1.5">
+                  {actionResult.shopping_list.map((s, i) => (
+                    <li key={i} className="text-sm text-amber-700 flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 bg-amber-500 rounded-full mt-1.5 shrink-0" />
+                      <span><strong>{s.item}</strong> — {s.reason} <span className="text-xs">({s.priority})</span></span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {actionResult.reminders_created === 0 && actionResult.shopping_list.length === 0 && (
+              <p className="text-sm text-gray-500">AI 分析后认为当前无需额外行动。</p>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* AI Chat 追问区域 */}
       <div className="pt-4 border-t mt-6">

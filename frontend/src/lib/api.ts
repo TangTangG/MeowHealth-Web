@@ -85,7 +85,12 @@ export const sendReportChatMessage = (reportId: string, content: string) =>
 // ========== 设置 API ==========
 
 export const setApiKey = (apiKey: string) =>
-  api.post('/reports/settings/api-key', { api_key: apiKey }).then(r => r.data);
+  api.post('/settings/api-key', { api_key: apiKey }).then(r => r.data);
 
 export const getApiKeyStatus = () =>
-  api.get('/reports/settings/api-key/status').then(r => r.data);
+  api.get('/settings/api-key/status').then(r => r.data);
+
+// ========== 行动 API (Phase 5) ==========
+
+export const executeActions = (reportId: string) =>
+  api.post(`/actions/execute/${reportId}`).then(r => r.data);

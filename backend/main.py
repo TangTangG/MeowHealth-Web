@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.core.database import init_db
-from app.routers import cats, health_records, reminders, reports, uploads
+from app.routers import cats, health_records, reminders, reports, uploads, settings, actions
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
+    await init_db()
     yield
 
 app = FastAPI(
@@ -29,6 +29,8 @@ app.include_router(health_records.router, prefix="/api/v1")
 app.include_router(reminders.router, prefix="/api/v1")
 app.include_router(reports.router, prefix="/api/v1")
 app.include_router(uploads.router)
+app.include_router(settings.router, prefix="/api/v1")
+app.include_router(actions.router, prefix="/api/v1")
 
 
 @app.get("/")

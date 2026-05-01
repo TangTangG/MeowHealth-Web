@@ -15,8 +15,11 @@ def mock_cat_profile_maine_coon_overweight():
 @patch("app.ai.subagents.vision_agent.VisionAgent.extract")
 @patch("app.ai.subagents.lab_analyzer.LabAnalyzer.analyze")
 @patch("app.ai.subagents.dietitian_agent.DietitianAgent.prescribe")
+@patch("app.ai.subagents.critic_agent.CriticAgent.review")
+@patch("app.ai.subagents.history_agent.HistoryAnalystAgent.analyze")
+@patch("app.ai.subagents.research_agent.ResearchAgent.research")
 @patch("builtins.open")
-def test_orchestrator_pipeline_maine_coon(mock_open, mock_diet, mock_analyze, mock_extract, mock_get_api_key, mock_load_skill, mock_cat_profile_maine_coon_overweight):
+def test_orchestrator_pipeline_maine_coon(mock_open, mock_research, mock_history, mock_critic, mock_diet, mock_analyze, mock_extract, mock_get_api_key, mock_load_skill, mock_cat_profile_maine_coon_overweight):
     mock_get_api_key.return_value = "fake_key"
     
     # Mock specific skill loading
@@ -55,6 +58,15 @@ def test_orchestrator_pipeline_maine_coon(mock_open, mock_diet, mock_analyze, mo
         "绝对禁止断食，需换用低脂肝脏处方粮",
         "补充辅酶Q10保护心脏"
     ]
+
+    # Mock History output
+    mock_history.return_value = {"trends": [], "warnings": [], "historical_context": "首次分析"}
+
+    # Mock Critic output (approve everything)
+    mock_critic.return_value = {"approved": True, "flags": [], "revised_summary": "", "revised_recommendations": []}
+
+    # Mock Research output
+    mock_research.return_value = {"supplementary_findings": [], "literature_notes": []}
 
     orchestrator = MedicalOrchestrator()
     

@@ -6,11 +6,8 @@ from sqlalchemy import (
     ForeignKey, String, Text, Double, Boolean,
     DateTime, JSON, Integer, func, Index
 )
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-
-
-class Base(DeclarativeBase):
-    pass
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.core.database import Base
 
 
 class Cat(Base):

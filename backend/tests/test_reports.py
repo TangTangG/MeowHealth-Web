@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch
 
 class TestReports:
-    def test_create_report(self, client, sample_cat):
+    async def test_create_report(self, client, sample_cat):
         """测试创建报告（模拟 AI 分析）"""
         mock_analysis = {
             "indicators": [
@@ -22,9 +22,9 @@ class TestReports:
             "recommendations": ["继续保持"]
         }
         
-        with patch("app.routers.reports.analyze_report", return_value=mock_analysis):
-            response = client.post(
-                "/api/v1/api/reports/analyze",
+        with patch("app.ai.orchestrator.MedicalOrchestrator.process_report", return_value=mock_analysis):
+            response = await client.post(
+                "/api/v1/reports/analyze",
                 params={
                     "cat_id": sample_cat["id"],
                     "file_path": "/tmp/test.pdf",
@@ -40,7 +40,7 @@ class TestReports:
         assert data["ai_summary"] == "各项指标正常"
         assert len(data["indicators"]) == 1
     
-    def test_list_reports(self, client, sample_cat):
+    async def test_list_reports(self, client, sample_cat):
         """测试列出报告"""
         # 先创建一个报告
         mock_analysis = {
@@ -49,9 +49,9 @@ class TestReports:
             "recommendations": []
         }
         
-        with patch("app.routers.reports.analyze_report", return_value=mock_analysis):
-            client.post(
-                "/api/v1/api/reports/analyze",
+        with patch("app.ai.orchestrator.MedicalOrchestrator.process_report", return_value=mock_analysis):
+            await client.post(
+                "/api/v1/reports/analyze",
                 params={
                     "cat_id": sample_cat["id"],
                     "file_path": "/tmp/test.pdf",
@@ -61,13 +61,13 @@ class TestReports:
                 }
             )
         
-        response = client.get(f"/api/v1/api/reports/?cat_id={sample_cat['id']}")
+        response = await client.get(f"/api/v1/reports/?cat_id={sample_cat['id']}")
         assert response.status_code == 200
         data = response.json()
         assert len(data) == 1
         assert data[0]["cat_id"] == sample_cat["id"]
     
-    def test_get_report(self, client, sample_cat):
+    async def test_get_report(self, client, sample_cat):
         """测试获取单个报告"""
         mock_analysis = {
             "indicators": [],
@@ -75,9 +75,9 @@ class TestReports:
             "recommendations": []
         }
         
-        with patch("app.routers.reports.analyze_report", return_value=mock_analysis):
-            create_res = client.post(
-                "/api/v1/api/reports/analyze",
+        with patch("app.ai.orchestrator.MedicalOrchestrator.process_report", return_value=mock_analysis):
+            create_res = await client.post(
+                "/api/v1/reports/analyze",
                 params={
                     "cat_id": sample_cat["id"],
                     "file_path": "/tmp/test.pdf",
@@ -88,13 +88,13 @@ class TestReports:
             )
         
         report_id = create_res.json()["id"]
-        response = client.get(f"/api/v1/api/reports/{report_id}")
+        response = await client.get(f"/api/v1/reports/{report_id}")
         
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == report_id
     
-    def test_delete_report(self, client, sample_cat):
+    async def test_delete_report(self, client, sample_cat):
         """测试删除报告"""
         mock_analysis = {
             "indicators": [],
@@ -102,9 +102,9 @@ class TestReports:
             "recommendations": []
         }
         
-        with patch("app.routers.reports.analyze_report", return_value=mock_analysis):
-            create_res = client.post(
-                "/api/v1/api/reports/analyze",
+        with patch("app.ai.orchestrator.MedicalOrchestrator.process_report", return_value=mock_analysis):
+            create_res = await client.post(
+                "/api/v1/reports/analyze",
                 params={
                     "cat_id": sample_cat["id"],
                     "file_path": "/tmp/test.pdf",
@@ -115,10 +115,10 @@ class TestReports:
             )
         
         report_id = create_res.json()["id"]
-        response = client.delete(f"/api/v1/api/reports/{report_id}")
+        response = await client.delete(f"/api/v1/reports/{report_id}")
         
         assert response.status_code == 200
         
         # 确认已删除
-        get_res = client.get(f"/api/v1/api/reports/{report_id}")
+        get_res = await client.get(f"/api/v1/reports/{report_id}")
         assert get_res.status_code == 404
