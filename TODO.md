@@ -57,9 +57,9 @@
 ### 6.2 分诊与问诊 Agent (进行中 🚧)
 - [x] TriageAgent 分诊规则引擎
 - [x] SymptomCollectorAgent 引导问诊
-- [ ] DiagnosticReasonerAgent 推理诊断
+- [x] DiagnosticReasonerAgent 推理诊断
 
-### 6.3 诊疗流水线编排
+### 6.3 诊疗流水线编排 (进行中 🚧)
 - [ ] ConsultationPipeline 状态机
 - [ ] HealthAdvisorAgent 健康顾问
 - [ ] MonitoringAgent 随访提醒
