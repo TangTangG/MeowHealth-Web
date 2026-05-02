@@ -60,7 +60,7 @@
 - [x] DiagnosticReasonerAgent 推理诊断
 
 ### 6.3 诊疗流水线编排 (进行中 🚧)
-- [ ] ConsultationPipeline 状态机
+- [x] ConsultationPipeline 状态机
 - [ ] HealthAdvisorAgent 健康顾问
 - [ ] MonitoringAgent 随访提醒
 - [ ] Orchestrator 整合
