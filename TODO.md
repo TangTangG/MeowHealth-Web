@@ -62,7 +62,7 @@
 ### 6.3 诊疗流水线编排 (进行中 🚧)
 - [x] ConsultationPipeline 状态机
 - [x] HealthAdvisorAgent 健康顾问
-- [ ] MonitoringAgent 随访提醒
+- [x] MonitoringAgent 随访提醒
 - [ ] Orchestrator 整合
 
 ### 6.4 前端交互重构
