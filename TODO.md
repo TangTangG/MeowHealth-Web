@@ -54,9 +54,9 @@
 - [x] CRUD + Schemas（症状/体征读写）
 - [x] API 路由（POST/GET/PUT）
 
-### 6.2 分诊与问诊 Agent
-- [ ] TriageAgent 分诊规则引擎
-- [ ] SymptomCollectorAgent 引导问诊
+### 6.2 分诊与问诊 Agent (进行中 🚧)
+- [x] TriageAgent 分诊规则引擎
+- [x] SymptomCollectorAgent 引导问诊
 - [ ] DiagnosticReasonerAgent 推理诊断
 
 ### 6.3 诊疗流水线编排
