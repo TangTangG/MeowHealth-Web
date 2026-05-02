@@ -45,3 +45,33 @@
 - [x] **引入时间序列推理 (Cross-Temporal Reasoning)**：新增 HistoryAnalystAgent，结合过去的健康记录、体重趋势进行跨时间周期的纵向动态诊断（如早期慢性病预警）。
 - [x] **引入 RAG 动态外脑 (Research Agent)**：升级静态 Markdown 技能树，当遭遇疑难指标时自动检索最新兽医文献、临床指南数据库，实现医学知识自我更新。
 - [x] **进化为 Actionable Agent (工具调用)**：打破纯文本诊断，赋予 Agent 调用内部/外部 API 的能力。例如分析后自动调用 `/reminders` 生成 30 天后的复查提醒，或生成对应处方粮的外部购买清单。
+
+## Phase 6: 兽医院式诊疗流水线 (进行中 🚧)
+### 6.1 健康档案强化 (Backend)
+- [x] 扩展 HealthRecord 模型（诊疗类型、分诊等级、状态、随访时间）
+- [x] 新增 SymptomLog 症状模型
+- [x] 新增 VitalSign 体征模型
+- [ ] CRUD + Schemas（症状/体征读写）
+- [ ] API 路由（POST/GET/PUT）
+
+### 6.2 分诊与问诊 Agent
+- [ ] TriageAgent 分诊规则引擎
+- [ ] SymptomCollectorAgent 引导问诊
+- [ ] DiagnosticReasonerAgent 推理诊断
+
+### 6.3 诊疗流水线编排
+- [ ] ConsultationPipeline 状态机
+- [ ] HealthAdvisorAgent 健康顾问
+- [ ] MonitoringAgent 随访提醒
+- [ ] Orchestrator 整合
+
+### 6.4 前端交互重构
+- [ ] 诊疗入口界面
+- [ ] 问诊对话界面
+- [ ] 健康档案总览
+- [ ] 随访提醒界面
+
+### 6.5 知识库深化
+- [ ] 疾病知识树
+- [ ] 症状-疾病关联引擎
+- [ ] 健康评分算法

@@ -30,6 +30,8 @@ class Cat(Base):
     health_records: Mapped[List["HealthRecord"]] = relationship(back_populates="cat", cascade="all, delete-orphan")
     feeding_logs: Mapped[List["FeedingLog"]] = relationship(back_populates="cat", cascade="all, delete-orphan")
     reminders: Mapped[List["Reminder"]] = relationship(back_populates="cat")
+    symptom_logs: Mapped[List["SymptomLog"]] = relationship(back_populates="cat", cascade="all, delete-orphan")
+    vital_signs: Mapped[List["VitalSign"]] = relationship(back_populates="cat", cascade="all, delete-orphan")
 
     __table_args__ = (
         Index("idx_cats_deleted_at", "deleted_at"),
@@ -47,6 +49,10 @@ class HealthRecord(Base):
     note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     ai_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     actionable_advice: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    consultation_type: Mapped[str] = mapped_column(String(50), default="routine")
+    triage_level: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    treatment_status: Mapped[str] = mapped_column(String(50), default="pending")
+    next_followup_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -55,6 +61,8 @@ class HealthRecord(Base):
     indicators: Mapped[List["HealthIndicator"]] = relationship(back_populates="record", cascade="all, delete-orphan")
     attachments: Mapped[List["ReportAttachment"]] = relationship(back_populates="record", cascade="all, delete-orphan")
     chat_messages: Mapped[List["AIChatMessage"]] = relationship(back_populates="record", cascade="all, delete-orphan")
+    symptom_logs: Mapped[List["SymptomLog"]] = relationship(back_populates="record", cascade="all, delete-orphan")
+    vital_signs: Mapped[List["VitalSign"]] = relationship(back_populates="record", cascade="all, delete-orphan")
 
     __table_args__ = (
         Index("idx_health_records_cat_id_date", "cat_id", "date"),
@@ -205,3 +213,56 @@ class CatFood(Base):
     review_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class SymptomLog(Base):
+    __tablename__ = "symptom_logs"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    cat_id: Mapped[str] = mapped_column(ForeignKey("cats.id", ondelete="CASCADE"))
+    record_id: Mapped[Optional[str]] = mapped_column(ForeignKey("health_records.id", ondelete="CASCADE"), nullable=True)
+    symptom_description: Mapped[str] = mapped_column(Text)
+    severity: Mapped[int] = mapped_column(Integer)
+    onset_time: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    duration_hours: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    is_ongoing: Mapped[bool] = mapped_column(Boolean, default=True)
+    photo_urls: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    triggers: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    cat: Mapped["Cat"] = relationship(back_populates="symptom_logs")
+    record: Mapped[Optional["HealthRecord"]] = relationship(back_populates="symptom_logs")
+
+    __table_args__ = (
+        Index("idx_symptom_logs_cat_id", "cat_id"),
+        Index("idx_symptom_logs_record_id", "record_id"),
+    )
+
+
+class VitalSign(Base):
+    __tablename__ = "vital_signs"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    cat_id: Mapped[str] = mapped_column(ForeignKey("cats.id", ondelete="CASCADE"))
+    record_id: Mapped[Optional[str]] = mapped_column(ForeignKey("health_records.id", ondelete="CASCADE"), nullable=True)
+    weight_kg: Mapped[float] = mapped_column(Double)
+    temperature_celsius: Mapped[Optional[float]] = mapped_column(Double, nullable=True)
+    heart_rate: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    respiratory_rate: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    spirit_status: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    appetite_score: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    water_intake_ml: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    stool_status: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    measured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    cat: Mapped["Cat"] = relationship(back_populates="vital_signs")
+    record: Mapped[Optional["HealthRecord"]] = relationship(back_populates="vital_signs")
+
+    __table_args__ = (
+        Index("idx_vital_signs_cat_id", "cat_id"),
+        Index("idx_vital_signs_record_id", "record_id"),
+        Index("idx_vital_signs_measured_at", "measured_at"),
+    )
