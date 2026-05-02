@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, ConfigDict
 from typing_extensions import Literal
+from app.schemas.schemas import HealthIndicatorResponse, ReportAttachmentResponse
 
 # Enums (str constraints)
 ConsultationType = Literal["routine", "symptom", "emergency", "followup"]
@@ -100,8 +101,8 @@ class HealthRecordWithDetails(BaseModel):
 
     symptom_logs: List[SymptomLogResponse] = []
     vital_signs: List[VitalSignResponse] = []
-    indicators: List[dict] = []
-    attachments: List[dict] = []
+    indicators: List[HealthIndicatorResponse] = []
+    attachments: List[ReportAttachmentResponse] = []
 
     created_at: datetime
     updated_at: datetime

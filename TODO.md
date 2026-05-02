@@ -47,12 +47,12 @@
 - [x] **进化为 Actionable Agent (工具调用)**：打破纯文本诊断，赋予 Agent 调用内部/外部 API 的能力。例如分析后自动调用 `/reminders` 生成 30 天后的复查提醒，或生成对应处方粮的外部购买清单。
 
 ## Phase 6: 兽医院式诊疗流水线 (进行中 🚧)
-### 6.1 健康档案强化 (Backend)
+### 6.1 健康档案强化 (Backend) ✅ 完成
 - [x] 扩展 HealthRecord 模型（诊疗类型、分诊等级、状态、随访时间）
 - [x] 新增 SymptomLog 症状模型
 - [x] 新增 VitalSign 体征模型
 - [x] CRUD + Schemas（症状/体征读写）
-- [ ] API 路由（POST/GET/PUT）
+- [x] API 路由（POST/GET/PUT）
 
 ### 6.2 分诊与问诊 Agent
 - [ ] TriageAgent 分诊规则引擎
