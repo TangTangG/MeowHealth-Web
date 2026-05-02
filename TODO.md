@@ -51,7 +51,7 @@
 - [x] 扩展 HealthRecord 模型（诊疗类型、分诊等级、状态、随访时间）
 - [x] 新增 SymptomLog 症状模型
 - [x] 新增 VitalSign 体征模型
-- [ ] CRUD + Schemas（症状/体征读写）
+- [x] CRUD + Schemas（症状/体征读写）
 - [ ] API 路由（POST/GET/PUT）
 
 ### 6.2 分诊与问诊 Agent
