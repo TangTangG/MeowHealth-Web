@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Literal
 from app.schemas.schemas import HealthIndicatorResponse, ReportAttachmentResponse
 
@@ -115,3 +115,43 @@ class HealthRecordWithDetails(BaseModel):
 class TreatmentStatusUpdate(BaseModel):
     treatment_status: str
     next_followup_at: Optional[datetime] = None
+
+
+# ------------------------------------------------------------------
+# 诊疗流水线 Schemas
+# ------------------------------------------------------------------
+class ConsultationStartRequest(BaseModel):
+    """启动诊疗请求"""
+    cat_id: str
+    initial_symptoms: str
+
+
+class ConsultationContinueRequest(BaseModel):
+    """继续诊疗请求"""
+    user_input: dict = Field(default_factory=dict, description="用户对上一轮问题的回答")
+
+
+class ConsultationResponse(BaseModel):
+    """诊疗流程响应"""
+    session_id: str
+    status: str
+    triage_level: Optional[str] = None
+    triage_advice: Optional[str] = None
+    questions: Optional[list[str]] = None
+    is_sufficient: Optional[bool] = None
+    next_action: Optional[str] = None
+    health_record_id: Optional[str] = None
+    diagnosis: Optional[dict] = None
+    current_round: Optional[int] = None
+    collected_summary: Optional[str] = None
+    error: Optional[str] = None
+
+
+class ConsultationStatusResponse(BaseModel):
+    """诊疗状态查询响应"""
+    session_id: str
+    status: str
+    current_round: int
+    triage_result: Optional[dict] = None
+    collected_summary: Optional[dict] = None
+    error: Optional[str] = None

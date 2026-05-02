@@ -63,7 +63,7 @@
 - [x] ConsultationPipeline 状态机
 - [x] HealthAdvisorAgent 健康顾问
 - [x] MonitoringAgent 随访提醒
-- [ ] Orchestrator 整合
+- [x] Orchestrator 整合
 
 ### 6.4 前端交互重构
 - [ ] 诊疗入口界面

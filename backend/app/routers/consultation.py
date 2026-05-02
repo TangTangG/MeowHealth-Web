@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from typing import List
 
+from app.core.consultation_pipeline import ConsultationPipeline
 from app.core.database import get_db
 from app.models.models import Cat, HealthRecord
 from app.crud.cat import get_cat
@@ -20,9 +21,16 @@ from app.schemas.health import (
     VitalSignResponse,
     HealthRecordWithDetails,
     TreatmentStatusUpdate,
+    ConsultationStartRequest,
+    ConsultationContinueRequest,
+    ConsultationResponse,
+    ConsultationStatusResponse,
 )
 
 router = APIRouter(prefix="/consultation", tags=["consultation"])
+
+# 全局 Pipeline 实例（单例）
+pipeline = ConsultationPipeline()
 
 
 @router.post("/cats/{cat_id}/symptoms", response_model=SymptomLogResponse, status_code=status.HTTP_201_CREATED)
@@ -105,3 +113,80 @@ async def update_record_status(
     if record is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Health record not found")
     return record
+
+
+@router.post("/start", response_model=ConsultationResponse, status_code=status.HTTP_201_CREATED)
+async def start_consultation(
+    data: ConsultationStartRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """启动症状咨询诊疗流程"""
+    from app.crud.cat import get_cat
+    
+    cat = await get_cat(db, data.cat_id)
+    if cat is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cat not found")
+    
+    result = await pipeline.start(
+        cat_id=data.cat_id,
+        initial_symptoms=data.initial_symptoms,
+        db=db,
+    )
+    
+    if "error" in result:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=result["error"])
+    
+    return result
+
+
+@router.post("/{session_id}/continue", response_model=ConsultationResponse)
+async def continue_consultation(
+    session_id: str,
+    data: ConsultationContinueRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """继续诊疗流程（回答追问）"""
+    result = await pipeline.continue_step(
+        session_id=session_id,
+        user_input=data.user_input,
+        db=db,
+    )
+    
+    if "error" in result:
+        if "Session not found" in result["error"]:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=result["error"])
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=result["error"])
+    
+    return result
+
+
+@router.get("/{session_id}/status", response_model=ConsultationStatusResponse)
+async def get_consultation_status(
+    session_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """获取当前诊疗状态"""
+    result = await pipeline.get_status(session_id=session_id, db=db)
+    
+    if "error" in result:
+        if "Session not found" in result["error"]:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=result["error"])
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=result["error"])
+    
+    return result
+
+
+@router.post("/{session_id}/cancel", response_model=ConsultationResponse)
+async def cancel_consultation(
+    session_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """取消诊疗流程"""
+    result = await pipeline.cancel(session_id=session_id, db=db)
+    
+    if "error" in result:
+        if "Session not found" in result["error"]:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=result["error"])
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=result["error"])
+    
+    return result
