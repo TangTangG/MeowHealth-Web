@@ -94,3 +94,59 @@ export const getApiKeyStatus = () =>
 
 export const executeActions = (reportId: string) =>
   api.post(`/actions/execute/${reportId}`).then(r => r.data);
+
+// ========== 症状咨询（兽医院式诊疗流水线）API ==========
+
+export interface ConsultationStartRequest {
+  cat_id: string;
+  initial_symptoms: string;
+}
+
+export interface ConsultationStartResponse {
+  session_id: string;
+  status: string;
+  triage_level: string;
+  triage_advice: string;
+  questions: string[];
+  is_sufficient: boolean;
+  next_action: string;
+  health_record_id: string;
+}
+
+export interface ConsultationContinueRequest {
+  user_input: Record<string, any>;
+}
+
+export interface ConsultationContinueResponse {
+  session_id: string;
+  status: string;
+  current_round: number;
+  questions: string[];
+  is_sufficient: boolean;
+  next_action: string;
+  collected_summary: string;
+  diagnosis: any;
+  triage_result: any;
+  error?: string;
+}
+
+export interface ConsultationStatusResponse {
+  session_id: string;
+  status: string;
+  current_round: number;
+  triage_result: any;
+  collected_summary: Record<string, any>;
+  error?: string;
+}
+
+export const startConsultation = (data: ConsultationStartRequest) =>
+  api.post<ConsultationStartResponse>('/consultation/start', data).then(r => r.data);
+
+export const continueConsultation = (sessionId: string, data: ConsultationContinueRequest) =>
+  api.post<ConsultationContinueResponse>(`/consultation/${sessionId}/continue`, data).then(r => r.data);
+
+export const getConsultationStatus = (sessionId: string) =>
+  api.get<ConsultationStatusResponse>(`/consultation/${sessionId}/status`).then(r => r.data);
+
+export const cancelConsultation = (sessionId: string) =>
+  api.post<ConsultationContinueResponse>(`/consultation/${sessionId}/cancel`).then(r => r.data);

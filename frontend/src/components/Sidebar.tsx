@@ -1,4 +1,4 @@
-import { Home, Cat, FileText, Settings } from 'lucide-react';
+import { Home, Cat, FileText, Settings, Stethoscope } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import CatSelector from './CatSelector';
 
@@ -11,6 +11,7 @@ const navItems = [
   { path: '/', icon: Home, label: 'Dashboard' },
   { path: '/cats', icon: Cat, label: '猫咪管理' },
   { path: '/reports', icon: FileText, label: '化验报告' },
+  { path: '/consultation', icon: Stethoscope, label: '症状咨询' },
   { path: '/settings', icon: Settings, label: '设置' },
 ];
 
