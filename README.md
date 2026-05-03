@@ -22,7 +22,8 @@
 | Phase 3: AI 化验单模块 | ✅ 完成 | 2026-04-22 |
 | Phase 4.1: AI 多智能体架构重构 (Orchestrator) | ✅ 完成 | 2026-04-29 |
 | Phase 5: Agent 架构演进与演化 | ✅ 完成 | 2026-05-01 |
-| Phase 4.2: 完善与部署 | ⏳ 待开始 | - |
+| Phase 6: 兽医院式诊疗流水线 | 🚧 进行中 (6.1-6.4 完成) | 2026-05-03 |
+| Phase 4.2: 部署与安全准备 | ✅ 完成 | 2026-05-01 |
 
 ## 🛠 技术栈
 
@@ -130,6 +131,25 @@ npx vitest run
 - **报告管理**: 列表展示、查看详情、删除报告
 - **测试覆盖**: 后端 10 个 API 测试 + 前端 3 个组件测试
 - **文档**: API 文档 (`docs/API.md`) + 组件文档 (`docs/Components.md`)
+
+### Phase 6 已完成 ✅ (前端交互)
+
+- **健康档案总览**: 顶部信息卡 + 5 Tab 切换（就诊记录/症状日志/体征趋势/化验指标/健康评分）
+- **随访提醒界面**: 顶部统计 + 4 Tab + 类型图标区分 + 症状追踪快速记录
+- **症状咨询流程**: 兽医院式分诊 → 引导问诊 → 诊断推理 → 健康建议
+- **路由与导航**: 新增「健康档案」和「随访提醒」侧边栏入口
+
+### Phase 6 后端已完成 ✅
+
+- **健康档案强化**: HealthRecord 扩展（诊疗类型、分诊等级、状态、随访时间）
+- **症状日志**: SymptomLog 模型与 CRUD
+- **体征记录**: VitalSign 模型与 CRUD
+- **分诊 Agent**: TriageAgent 规则引擎
+- **问诊 Agent**: SymptomCollectorAgent 引导式问诊
+- **诊断推理**: DiagnosticReasonerAgent 推理辅助
+- **健康顾问**: HealthAdvisorAgent 综合建议
+- **随访提醒**: MonitoringAgent 定期追踪
+- **诊疗流水线**: ConsultationPipeline 状态机编排
 
 ## 项目结构
 
