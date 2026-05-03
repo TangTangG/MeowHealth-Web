@@ -150,3 +150,8 @@ export const getConsultationStatus = (sessionId: string) =>
 
 export const cancelConsultation = (sessionId: string) =>
   api.post<ConsultationContinueResponse>(`/consultation/${sessionId}/cancel`).then(r => r.data);
+
+// ========== 健康档案 API ==========
+
+export const getCatHealthRecords = (catId: string) =>
+  api.get<import('@/types').HealthRecordWithDetails[]>(`/consultation/cats/${catId}/health-records`).then(r => r.data);

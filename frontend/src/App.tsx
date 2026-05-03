@@ -1,5 +1,6 @@
 import Reports from './pages/Reports';
 import Consultation from './pages/Consultation';
+import HealthProfile from './pages/HealthProfile';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -13,6 +14,7 @@ function App() {
         <Route path="cats" element={<Cats />} />
         <Route path="reports" element={<Reports />} />
         <Route path="consultation" element={<Consultation />} />
+        <Route path="health-profile" element={<HealthProfile />} />
         <Route path="settings" element={<div className="p-4">Settings (Coming Soon)</div>} />
       </Route>
     </Routes>

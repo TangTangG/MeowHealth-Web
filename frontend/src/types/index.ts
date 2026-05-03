@@ -95,11 +95,68 @@ export interface HealthIndicator {
   explanation?: string;
 }
 
-// 聊天消息
-export interface ChatMessage {
+// 症状记录
+export interface SymptomLog {
+  id: string;
+  cat_id: string;
+  record_id?: string;
+  symptom_description: string;
+  severity: number; // 1-5
+  onset_time: string;
+  duration_hours?: number;
+  is_ongoing: boolean;
+  photo_urls?: string[];
+  triggers?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// 生命体征
+export interface VitalSign {
+  id: string;
+  cat_id: string;
+  record_id?: string;
+  weight_kg: number;
+  temperature_celsius?: number;
+  heart_rate?: number;
+  respiratory_rate?: number;
+  spirit_status?: string;
+  appetite_score?: number; // 1-5
+  water_intake_ml?: number;
+  stool_status?: string;
+  measured_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// 报告附件
+export interface ReportAttachment {
   id: string;
   record_id: string;
-  role: 'user' | 'model';
-  content: string;
+  file_name: string;
+  file_type: string;
+  file_path: string;
   created_at: string;
+}
+
+// 健康记录详情（含 symptom_logs, vital_signs, indicators, attachments）
+export interface HealthRecordWithDetails {
+  id: string;
+  cat_id: string;
+  date: string;
+  type: string;
+  title: string;
+  note?: string;
+  ai_summary?: string;
+  actionable_advice?: string[];
+  consultation_type: string;
+  triage_level?: string;
+  treatment_status: string;
+  next_followup_at?: string;
+  symptom_logs: SymptomLog[];
+  vital_signs: VitalSign[];
+  indicators: HealthIndicator[];
+  attachments: ReportAttachment[];
+  created_at: string;
+  updated_at: string;
 }
