@@ -155,3 +155,10 @@ export const cancelConsultation = (sessionId: string) =>
 
 export const getCatHealthRecords = (catId: string) =>
   api.get<import('@/types').HealthRecordWithDetails[]>(`/consultation/cats/${catId}/health-records`).then(r => r.data);
+
+// ========== 随访提醒 API ==========
+
+export const getFollowUpRecords = (catId: string) =>
+  api.get<import('@/types').HealthRecordWithDetails[]>(`/consultation/cats/${catId}/health-records`).then(r => 
+    r.data.filter(record => record.next_followup_at !== null && record.next_followup_at !== undefined)
+  );
