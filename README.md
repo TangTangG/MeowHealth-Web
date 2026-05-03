@@ -22,7 +22,7 @@
 | Phase 3: AI 化验单模块 | ✅ 完成 | 2026-04-22 |
 | Phase 4.1: AI 多智能体架构重构 (Orchestrator) | ✅ 完成 | 2026-04-29 |
 | Phase 5: Agent 架构演进与演化 | ✅ 完成 | 2026-05-01 |
-| Phase 6: 兽医院式诊疗流水线 | 🚧 进行中 (6.1-6.4 完成) | 2026-05-03 |
+| Phase 6: 兽医院式诊疗流水线 | ✅ 完成 | 2026-05-03 |
 | Phase 4.2: 部署与安全准备 | ✅ 完成 | 2026-05-01 |
 
 ## 🛠 技术栈
@@ -150,6 +150,14 @@ npx vitest run
 - **健康顾问**: HealthAdvisorAgent 综合建议
 - **随访提醒**: MonitoringAgent 定期追踪
 - **诊疗流水线**: ConsultationPipeline 状态机编排
+
+### Phase 6.5 已完成 ✅
+
+- **疾病知识树**: `skills/diseases/` — 12 种常见猫疾病 Markdown 知识库（CKD/甲亢/糖尿病/FIP/猫瘟/鼻支/HCM/FLUTD/胰腺炎/脂肪肝/IBD/淋巴瘤）
+- **症状鉴别诊断**: `skills/symptoms/` — 8 种症状 Markdown 鉴别诊断（呕吐/腹泻/多饮多尿/精神萎靡/拒食/咳嗽/跛行/皮肤问题）
+- **症状-疾病关联引擎**: `SymptomDiseaseMapper` — 从外部 Markdown 加载疾病知识，支持症状匹配 + 品种/年龄/体征加权，Top 5 排序输出
+- **健康评分算法**: `HealthScoreEngine` — 后端综合评分引擎（基础80 + 4维度加分），与前端 HealthProfile 评分规则一致
+- **测试覆盖**: `tests/agents/test_knowledge_engine.py` — 11 tests passing
 
 ## 项目结构
 
