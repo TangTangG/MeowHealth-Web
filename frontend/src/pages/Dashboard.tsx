@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Plus, Activity, Scale, Calendar } from 'lucide-react';
 import WeightChart from '@/components/WeightChart';
+import DashboardIndicatorCard from '@/components/DashboardIndicatorCard';
 import Timeline from '@/components/Timeline';
 import TodoCard from '@/components/TodoCard';
 import { getHealthRecords, getWeightLogs, getReminders, createReminder } from '@/lib/api';
@@ -136,6 +137,9 @@ export default function Dashboard() {
             <h3 className="font-semibold text-gray-800 mb-4">体重趋势</h3>
             <WeightChart catId={selectedCatId} />
           </div>
+
+          {/* Indicator Card */}
+          <DashboardIndicatorCard catId={selectedCatId} />
 
           {/* Recent Timeline */}
           <div className="bg-white rounded-lg p-4 shadow-sm border">
