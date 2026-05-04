@@ -159,6 +159,16 @@ npx vitest run
 - **健康评分算法**: `HealthScoreEngine` — 后端综合评分引擎（基础80 + 4维度加分），与前端 HealthProfile 评分规则一致
 - **测试覆盖**: `tests/agents/test_knowledge_engine.py` — 11 tests passing
 
+### Phase 8 已完成 ✅
+
+- **疫苗接种记录**: `VaccinationRecord` 模型（疫苗类型/名称/批号/接种日期/到期日期），支持 FVRCP/狂犬/其他
+- **驱虫记录**: `DewormingRecord` 模型（产品名称/类型/用药日期/到期日期），支持内驱/外驱/内外同驱
+- **到期自动提醒**: 创建记录时若设置了 `next_due_at`，自动在 `Reminder` 表中生成到期提醒
+- **预防护理页面**: `/preventive-care` — 4 张概览卡片（记录数/到期数，到期标红）+ Tab 切换疫苗/驱虫列表
+- **到期高亮**: 已到期记录红色标签提示，统计卡片红色背景
+- **删除记录**: 每条记录支持删除（确认弹窗）
+- **测试覆盖**: 后端 4 tests + 前端 2 tests passing
+
 ## 项目结构
 
 ```

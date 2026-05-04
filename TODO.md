@@ -76,14 +76,15 @@
 - [x] 症状-疾病关联引擎（SymptomDiseaseMapper）
 - [x] 健康评分算法（HealthScoreEngine）
 
-## Phase 8: 疫苗驱虫管理 (规划中 📝)
-- [ ] 后端：疫苗/驱虫数据库模型与 Schema
-- [ ] 后端：CRUD API + 自动创建到期提醒
-- [ ] 前端：疫苗接种与驱虫记录管理页面
-- [ ] 前端：Dashboard 概览卡片（到期提醒统计）
-- [ ] 测试：后端 API 测试覆盖
+## Phase 8: 疫苗驱虫管理 ✅ (2026-05-04 完成)
+- [x] 后端：疫苗/驱虫数据库模型与 Schema
+- [x] 后端：CRUD API + 自动创建到期提醒
+- [x] 前端：疫苗接种与驱虫记录管理页面（Tab 切换 + 概览卡片 + 到期高亮）
+- [x] 前端：Dashboard 概览卡片（到期提醒统计）
+- [x] 测试：后端 API 测试覆盖（4 tests passing）
+- [x] 测试：前端组件测试覆盖（2 tests passing）
 
-## Phase 9: 健康数据可视化增强 (规划中 📝)
+## Phase 9: 健康数据可视化增强 (进行中 🚧)
 - [ ] 后端：聚合 Analytics API（体重趋势、指标历史、评分趋势）
 - [ ] 前端：Dashboard 化验指标概览卡片增强
 - [ ] 前端：新增 Analytics 数据洞察页面
