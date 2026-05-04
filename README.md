@@ -169,6 +169,15 @@ npx vitest run
 - **删除记录**: 每条记录支持删除（确认弹窗）
 - **测试覆盖**: 后端 4 tests + 前端 2 tests passing
 
+## Phase 9 已完成 ✅
+
+- **聚合 Analytics API**: 4 个端点（体重趋势/指标历史/评分历史/指标名称列表），支持日期范围和参考范围
+- **Dashboard 增强**: `DashboardIndicatorCard` 组件，展示最多 4 个最新化验指标（数值/单位/异常高亮/趋势箭头）
+- **数据洞察页面**: `/analytics` — 体重趋势(90天) + 健康评分趋势(180天) + 化验指标下拉选择对比
+- **PDF 导出**: `PDFExportButton` 组件，html2canvas + jsPDF，集成到 Reports 页面
+- **侧边栏导航**: 新增「数据洞察」入口
+- **测试覆盖**: 后端 2 tests + 前端 1 test passing
+
 ## 项目结构
 
 ```
