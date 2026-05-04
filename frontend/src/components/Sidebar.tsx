@@ -1,4 +1,4 @@
-import { Home, Cat, FileText, Settings, Stethoscope, ClipboardList, Bell, Syringe } from 'lucide-react';
+import { Home, Cat, FileText, Settings, Stethoscope, ClipboardList, Bell, Syringe, BarChart3 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import CatSelector from './CatSelector';
 
@@ -15,6 +15,7 @@ const navItems = [
   { path: '/health-profile', icon: ClipboardList, label: '健康档案' },
   { path: '/follow-up', icon: Bell, label: '随访提醒' },
   { path: '/preventive-care', icon: Syringe, label: '疫苗驱虫' },
+  { path: '/analytics', icon: BarChart3, label: '数据洞察' },
   { path: '/settings', icon: Settings, label: '设置' },
 ];
 

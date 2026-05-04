@@ -3,6 +3,7 @@ import Consultation from './pages/Consultation';
 import HealthProfile from './pages/HealthProfile';
 import FollowUpReminders from './pages/FollowUpReminders';
 import PreventiveCare from './pages/PreventiveCare';
+import Analytics from './pages/Analytics';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -19,6 +20,7 @@ function App() {
         <Route path="health-profile" element={<HealthProfile />} />
         <Route path="follow-up" element={<FollowUpReminders />} />
         <Route path="preventive-care" element={<PreventiveCare />} />
+        <Route path="analytics" element={<Analytics />} />
         <Route path="settings" element={<div className="p-4">Settings (Coming Soon)</div>} />
       </Route>
     </Routes>
