@@ -2,6 +2,8 @@
 
 "猫咪健康守护" 网页版,一个支持桌面和移动端的私有化单用户猫咪健康管理系统。核心主打 **基于多智能体架构的 AI 兽医诊疗引擎**，提供"千猫千面"的个性化健康分析。包含 7 个专业 Agent 协作：VisionAgent（OCR提取）→ HistoryAnalystAgent（历史趋势）→ LabAnalyzer（病理分析）→ ResearchAgent（知识补充）→ DietitianAgent（营养建议）→ CriticAgent（主任审查）→ ActionableAgent（自动生成复查提醒和购物清单）。
 
+**远程仓库**: [GitHub: TangTangG/MeowHealth-Web](https://github.com/TangTangG/MeowHealth-Web) · 分支 `feature/vet-inspired-agent-flow` · 最新推送 2026-05-04（Phase 8+9 全部完成）
+
 ## 🧠 核心特性:多智能体 AI 诊疗引擎
 
 本项目彻底摒弃了传统单体大模型的粗放式分析(极易产生幻觉和遗漏),在 Phase 4.1 中重构了一套对标专业兽医院工作流的 **Multi-Agent 专家组**,将 AI 作为系统的绝对核心:
