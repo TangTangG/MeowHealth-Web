@@ -160,3 +160,39 @@ export interface HealthRecordWithDetails {
   created_at: string;
   updated_at: string;
 }
+
+export interface VaccinationRecord {
+  id: string;
+  cat_id: string;
+  vaccine_type: 'FVRCP' | 'rabies' | 'other';
+  vaccine_name: string;
+  batch_number?: string;
+  administered_at: string;
+  next_due_at?: string;
+  administered_by?: string;
+  note?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DewormingRecord {
+  id: string;
+  cat_id: string;
+  product_name: string;
+  deworm_type: 'internal' | 'external' | 'combo';
+  administered_at: string;
+  next_due_at?: string;
+  dosage?: string;
+  note?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PreventiveCareSummary {
+  vaccination_count: number;
+  deworming_count: number;
+  latest_vaccination: VaccinationRecord | null;
+  latest_deworming: DewormingRecord | null;
+  overdue_vaccinations: number;
+  overdue_deworming: number;
+}

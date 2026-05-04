@@ -162,3 +162,40 @@ export const getFollowUpRecords = (catId: string) =>
   api.get<import('@/types').HealthRecordWithDetails[]>(`/consultation/cats/${catId}/health-records`).then(r => 
     r.data.filter(record => record.next_followup_at !== null && record.next_followup_at !== undefined)
   );
+
+// ========== 预防性护理 API (Phase 8) ==========
+
+import type { VaccinationRecord, DewormingRecord, PreventiveCareSummary } from '@/types';
+
+export async function getVaccinations(catId: string): Promise<VaccinationRecord[]> {
+  const res = await api.get('/api/v1/preventive-care/vaccinations', { params: { cat_id: catId } });
+  return res.data;
+}
+
+export async function createVaccination(data: Omit<VaccinationRecord, 'id' | 'created_at' | 'updated_at'>): Promise<VaccinationRecord> {
+  const res = await api.post('/api/v1/preventive-care/vaccinations', data);
+  return res.data;
+}
+
+export async function deleteVaccination(id: string): Promise<void> {
+  await api.delete(`/api/v1/preventive-care/vaccinations/${id}`);
+}
+
+export async function getDeworming(catId: string): Promise<DewormingRecord[]> {
+  const res = await api.get('/api/v1/preventive-care/deworming', { params: { cat_id: catId } });
+  return res.data;
+}
+
+export async function createDeworming(data: Omit<DewormingRecord, 'id' | 'created_at' | 'updated_at'>): Promise<DewormingRecord> {
+  const res = await api.post('/api/v1/preventive-care/deworming', data);
+  return res.data;
+}
+
+export async function deleteDeworming(id: string): Promise<void> {
+  await api.delete(`/api/v1/preventive-care/deworming/${id}`);
+}
+
+export async function getPreventiveSummary(catId: string): Promise<PreventiveCareSummary> {
+  const res = await api.get(`/api/v1/preventive-care/summary/${catId}`);
+  return res.data;
+}
