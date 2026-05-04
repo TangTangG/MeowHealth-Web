@@ -172,3 +172,41 @@ class ApiKeyStatus(BaseModel):
     is_set: bool
     masked_key: Optional[str] = None
 
+
+class VaccinationBase(BaseModel):
+    vaccine_type: str
+    vaccine_name: str
+    batch_number: Optional[str] = None
+    administered_at: datetime
+    next_due_at: Optional[datetime] = None
+    administered_by: Optional[str] = None
+    note: Optional[str] = None
+
+class VaccinationCreate(VaccinationBase):
+    cat_id: str
+
+class VaccinationResponse(VaccinationBase):
+    id: str
+    cat_id: str
+    created_at: datetime
+    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class DewormingBase(BaseModel):
+    product_name: str
+    deworm_type: str
+    administered_at: datetime
+    next_due_at: Optional[datetime] = None
+    dosage: Optional[str] = None
+    note: Optional[str] = None
+
+class DewormingCreate(DewormingBase):
+    cat_id: str
+
+class DewormingResponse(DewormingBase):
+    id: str
+    cat_id: str
+    created_at: datetime
+    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+

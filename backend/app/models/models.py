@@ -32,6 +32,8 @@ class Cat(Base):
     reminders: Mapped[List["Reminder"]] = relationship(back_populates="cat")
     symptom_logs: Mapped[List["SymptomLog"]] = relationship(back_populates="cat", cascade="all, delete-orphan")
     vital_signs: Mapped[List["VitalSign"]] = relationship(back_populates="cat", cascade="all, delete-orphan")
+    vaccination_records: Mapped[List["VaccinationRecord"]] = relationship(back_populates="cat", cascade="all, delete-orphan")
+    deworming_records: Mapped[List["DewormingRecord"]] = relationship(back_populates="cat", cascade="all, delete-orphan")
 
     __table_args__ = (
         Index("idx_cats_deleted_at", "deleted_at"),
@@ -265,4 +267,42 @@ class VitalSign(Base):
         Index("idx_vital_signs_cat_id", "cat_id"),
         Index("idx_vital_signs_record_id", "record_id"),
         Index("idx_vital_signs_measured_at", "measured_at"),
+    )
+
+
+class VaccinationRecord(Base):
+    __tablename__ = "vaccination_records"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    cat_id: Mapped[str] = mapped_column(ForeignKey("cats.id", ondelete="CASCADE"))
+    vaccine_type: Mapped[str] = mapped_column(String(50))
+    vaccine_name: Mapped[str] = mapped_column(String(200))
+    batch_number: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    administered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    next_due_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    administered_by: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    cat: Mapped["Cat"] = relationship(back_populates="vaccination_records")
+    __table_args__ = (
+        Index("idx_vaccination_records_cat_id", "cat_id"),
+        Index("idx_vaccination_records_next_due", "next_due_at"),
+    )
+
+class DewormingRecord(Base):
+    __tablename__ = "deworming_records"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    cat_id: Mapped[str] = mapped_column(ForeignKey("cats.id", ondelete="CASCADE"))
+    product_name: Mapped[str] = mapped_column(String(200))
+    deworm_type: Mapped[str] = mapped_column(String(50))
+    administered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    next_due_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    dosage: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    cat: Mapped["Cat"] = relationship(back_populates="deworming_records")
+    __table_args__ = (
+        Index("idx_deworming_records_cat_id", "cat_id"),
+        Index("idx_deworming_records_next_due", "next_due_at"),
     )
