@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { UploadZone } from '@/components/UploadZone';
 import { ReportCard } from '@/components/ReportCard';
 import { ChatAssistant } from '@/components/ChatAssistant';
 import { api } from '@/lib/api';
 import { FileText, Loader2, Sparkles, Trash2, Key, ChevronLeft } from 'lucide-react';
+import PDFExportButton from '@/components/PDFExportButton';
 
 interface OutletContext {
   selectedCatId: string | null;
@@ -42,6 +43,7 @@ export default function Reports() {
   const [apiKeyConfigured, setApiKeyConfigured] = useState(false);
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
   const [apiKey, setApiKey] = useState('');
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const loadReports = async () => {
     if (!selectedCatId) return;
@@ -126,6 +128,7 @@ export default function Reports() {
             返回列表
           </button>
           <h2 className="text-2xl font-bold text-gray-800">{selectedReport.title}</h2>
+          <PDFExportButton targetRef={reportRef} fileName={`report-${selectedReport.id}.pdf`} />
           <button
             onClick={() => handleDelete(selectedReport.id)}
             className="ml-auto p-2 text-red-600 hover:bg-red-50 rounded"
@@ -134,7 +137,7 @@ export default function Reports() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div ref={reportRef} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <ReportCard
               title={selectedReport.title}
