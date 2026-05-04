@@ -188,11 +188,43 @@ export interface DewormingRecord {
   updated_at: string;
 }
 
-export interface PreventiveCareSummary {
-  vaccination_count: number;
-  deworming_count: number;
-  latest_vaccination: VaccinationRecord | null;
-  latest_deworming: DewormingRecord | null;
-  overdue_vaccinations: number;
-  overdue_deworming: number;
+
+// ========== 分析图表类型 (Phase 9) ==========
+
+export interface WeightTrendData {
+  date: string;
+  weight: number;
+}
+
+export interface WeightTrendResponse {
+  cat_id: string;
+  days: number;
+  data: WeightTrendData[];
+  count: number;
+}
+
+export interface IndicatorHistoryPoint {
+  date: string;
+  value: number | null;
+  unit: string;
+  reference_min: number | null;
+  reference_max: number | null;
+  is_abnormal: boolean;
+}
+
+export interface HealthScorePoint {
+  date: string;
+  score: number;
+  weight: number;
+}
+
+export interface HealthScoreHistoryResponse {
+  cat_id: string;
+  days: number;
+  data: HealthScorePoint[];
+}
+
+export interface IndicatorNameItem {
+  name: string;
+  display_name: string;
 }

@@ -195,7 +195,37 @@ export async function deleteDeworming(id: string): Promise<void> {
   await api.delete(`/api/v1/preventive-care/deworming/${id}`);
 }
 
-export async function getPreventiveSummary(catId: string): Promise<PreventiveCareSummary> {
-  const res = await api.get(`/api/v1/preventive-care/summary/${catId}`);
+// ========== 分析图表 API (Phase 9) ==========
+
+import type {
+  WeightTrendResponse,
+  IndicatorHistoryPoint,
+  HealthScoreHistoryResponse,
+  IndicatorNameItem,
+} from '@/types';
+
+export async function getWeightTrend(catId: string, days = 90): Promise<WeightTrendResponse> {
+  const res = await api.get('/api/v1/analytics/weight-trend', { params: { cat_id: catId, days } });
+  return res.data;
+}
+
+export async function getIndicatorHistory(
+  catId: string,
+  indicatorName: string,
+  limit = 20
+): Promise<IndicatorHistoryPoint[]> {
+  const res = await api.get('/api/v1/analytics/indicator-history', {
+    params: { cat_id: catId, indicator_name: indicatorName, limit },
+  });
+  return res.data;
+}
+
+export async function getHealthScoreHistory(catId: string, days = 180): Promise<HealthScoreHistoryResponse> {
+  const res = await api.get('/api/v1/analytics/health-score-history', { params: { cat_id: catId, days } });
+  return res.data;
+}
+
+export async function getIndicatorNames(catId: string): Promise<IndicatorNameItem[]> {
+  const res = await api.get('/api/v1/analytics/indicator-names', { params: { cat_id: catId } });
   return res.data;
 }
